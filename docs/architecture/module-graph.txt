@@ -1,0 +1,16 @@
+# NeNe Gambit の依存グラフの正本（ARC-002）。eng/conformance.py の CNF-010 / CNF-011 / CNF-012 / CNF-014 / CNF-017 が読む。
+# 1 行 1 target: <名前> kind=<library|executable|test> deps=<target,...> std=<標準モジュール,...> [role=composition-root] [unsafe=allowed]
+# ここに載っているのは「承認された」target であり、Package.swift に在ることは意味しない。
+# target は最初の具体的な責務が生じた PR で Package.swift に足す（空の将来用 target を作らない）。
+# 行を足す・依存を変えるには docs/PROJECT_LAYOUT.md と ADR を先に変える。
+
+NeNeGambitCore          kind=library     deps=
+NeNeGambitEngine        kind=library     deps=NeNeGambitCore
+NeNeGambitRender        kind=library     deps=NeNeGambitCore,NeNeGambitEngine
+NeNeGambitTerminal      kind=library     deps=NeNeGambitRender                                                     std=Glibc unsafe=allowed
+nene-gambit             kind=executable  deps=NeNeGambitCore,NeNeGambitEngine,NeNeGambitRender,NeNeGambitTerminal std=Glibc role=composition-root
+
+NeNeGambitCoreTests     kind=test        deps=NeNeGambitCore                                                       std=Testing
+NeNeGambitEngineTests   kind=test        deps=NeNeGambitCore,NeNeGambitEngine                                      std=Testing
+NeNeGambitRenderTests   kind=test        deps=NeNeGambitCore,NeNeGambitEngine,NeNeGambitRender                     std=Testing
+NeNeGambitTerminalTests kind=test        deps=NeNeGambitRender,NeNeGambitTerminal                                  std=Testing
