@@ -5,9 +5,9 @@
 BASE ?= origin/main
 SWIFTLINT := .tools/swiftlint
 
-.PHONY: check bootstrap tools build test format lint conformance conformance-test commits
+.PHONY: check bootstrap tools build test smoke format lint conformance conformance-test commits
 
-check: tools build format lint conformance conformance-test test commits
+check: tools build format lint conformance conformance-test test smoke commits
 	@echo "make check: 緑"
 
 bootstrap: tools
@@ -28,6 +28,11 @@ format:
 
 lint:
 	eng/lint.sh $(SWIFTLINT) --config .swiftlint.yml
+
+# 実行ファイルを疑似端末で動かし、キーと終わり方ごとの端末の復元を見る（FR-08）。release 構成の実行ファイルを使う
+smoke:
+	eng/swift-strict.sh swift build -c release --product nene-gambit
+	python3 eng/smoke-terminal.py .build/release/nene-gambit
 
 conformance:
 	python3 eng/conformance.py

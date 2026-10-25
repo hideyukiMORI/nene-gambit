@@ -13,7 +13,6 @@ public enum FENCodec {
         ("K", CastlingRight(color: .white, side: .kingside)), ("Q", CastlingRight(color: .white, side: .queenside)),
         ("k", CastlingRight(color: .black, side: .kingside)), ("q", CastlingRight(color: .black, side: .queenside)),
     ]
-    private static let fileLetters: [Character] = ["a", "b", "c", "d", "e", "f", "g", "h"]
 
     /// FEN を読む。
     public static func decode(_ text: String) -> FENDecoding {
@@ -57,15 +56,10 @@ public enum FENCodec {
             encodePlacement(position.board),
             position.sideToMove == .white ? "w" : "b",
             castling.isEmpty ? "-" : castling,
-            position.rights.enPassant.map(name) ?? "-",
+            position.rights.enPassant.map(\.name) ?? "-",
             String(position.clocks.halfmove),
             String(position.clocks.fullmove),
         ].joined(separator: " ")
-    }
-
-    /// 升の名前（`e3` 等）。
-    static func name(_ square: Square) -> String {
-        "\(fileLetters[square.file])\(square.rank + 1)"
     }
 
     private static func decodePlacement(_ field: String) -> Board? {
@@ -135,7 +129,7 @@ public enum FENCodec {
             return EnPassantField(square: nil)
         }
         let characters = Array(field)
-        guard characters.count == 2, let file = fileLetters.firstIndex(of: characters[0]),
+        guard characters.count == 2, let file = Square.fileLetters.firstIndex(of: characters[0]),
             let rankNumber = characters[1].wholeNumberValue, [3, 6].contains(rankNumber)
         else {
             return nil

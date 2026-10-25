@@ -26,6 +26,14 @@ public struct Square: Sendable, Hashable {
         index / 8
     }
 
+    /// 升の名前（`e4` 等）。FEN と棋譜の両方がこの名前を使う。
+    public var name: String {
+        "\(Self.fileLetters[file])\(rank + 1)"
+    }
+
+    /// 筋の文字（a〜h）。
+    static let fileLetters: [Character] = ["a", "b", "c", "d", "e", "f", "g", "h"]
+
     /// 筋と段をずらした升。盤の外へ出たら nil。
     public func offset(file fileStep: Int, rank rankStep: Int) -> Square? {
         Square.at(file: file + fileStep, rank: rank + rankStep)

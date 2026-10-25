@@ -20,3 +20,5 @@ ADR は「なぜそう決めたか」「何を却下したか」を書く。
 | [0002](0002-swift-testing-only.md) | テスト枠組みは Swift Testing だけにする | 受理 |
 | [0003](0003-board-and-move-representation.md) | 盤は 64 升の値型の配列、指し手は「元・先・昇格先」の 1 表記、適用は新しい局面を返す | 受理 |
 | [0004](0004-perft-runs-in-release-configuration.md) | perft は深さ 5 まで全部を release 構成のテストでゲートに回す | 受理 |
+| [0005](0005-screen-layout-and-glyph-width.md) | 画面は 1 文字 1 桁の格子で、盤は 1 升 3 桁、HUD の文言は ASCII の英語 | 受理 |
+| [0006](0006-terminal-loop-and-signals.md) | 並行は 1 本のループだけ、シグナルは原子的な旗、異常終了はハンドラが端末を戻す | 受理 |
