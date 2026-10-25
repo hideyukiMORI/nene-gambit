@@ -8,10 +8,8 @@ struct TerminalTests {
         String(decoding: bytes, as: UTF8.self)
     }
 
-    static func grid(
-        _ glyphs: GlyphSet, size: ScreenSize = TableRenderer.largeSize, theme: Theme = .standard, wide: Bool = false
-    ) -> Grid {
-        let traits = TerminalTraits(frame: .boxDrawing, wideSymbols: wide, colors: .trueColor)
+    static func grid(_ glyphs: GlyphSet, size: ScreenSize = TableRenderer.largeSize, theme: Theme = .standard) -> Grid {
+        let traits = TerminalTraits(frame: .boxDrawing, colors: .trueColor)
         let options = DisplayOptions(glyphs: glyphs, theme: theme, traits: traits)
         let state = ScreenState(series: TableRendererFixture.series, options: options, seed: 1, countdown: nil)
         return TableRenderer.render(state, size: size)
@@ -74,37 +72,42 @@ struct TerminalTests {
         #expect(Palette256.nearest(Rgb(red: 128, green: 128, blue: 128)) == 244)
     }
 
-    /// 2 桁の駒記号の右半分には何も書かない。書いたバイト列を「2 桁の文字はカーソルを 2 つ進める」端末として再生して確かめる。
-    @Test func wideGlyphTailsAreNeverOverwritten() {
-        let grid = Self.grid(.symbols, wide: true)
-        let wide: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{265F}"]
-        var tails: Set<[Int]> = []
+    /// 駒記号の右半分には何も書かず、端末が駒記号でカーソルを 1 進めても 2 進めても、ほかの文字は格子どおりの桁に書かれる。
+    /// 書いたバイト列を、その 2 種類の端末として再生して確かめる（Windows Terminal は 1 と答えて約 2 桁で描く・Issue #13）。
+    @Test(arguments: [1, 2])
+    func symbolTailsAreSkippedWhateverTheTerminalAdvances(advance: Int) {
+        let grid = Self.grid(.symbols)
+        let symbols: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{265F}"]
+        var screen: [[Int]: Character] = [:]
         var cursor = [0, 0]
-        var overwritten = 0
         var characters = Array(Self.text(FrameEncoder.encode(grid, previous: nil, colors: .trueColor)))[...]
         while let character = characters.popFirst() {
-            if character == "\u{1B}" {
-                var sequence = ""
-                while let next = characters.popFirst() {
-                    sequence.append(next)
-                    if next.isLetter { break }
-                }
-                if sequence.hasSuffix("H") {
-                    let parts = sequence.dropFirst().dropLast().split(separator: ";").compactMap { Int($0) }
-                    cursor = [parts[0] - 1, parts[1] - 1]
-                }
+            guard character == "\u{1B}" else {
+                screen[cursor] = character
+                cursor[1] += symbols.contains(character) ? advance : 1
                 continue
             }
-            if tails.contains(cursor) { overwritten += 1 }
-            if wide.contains(character) {
-                tails.insert([cursor[0], cursor[1] + 1])
-                cursor[1] += 2
-            } else {
-                cursor[1] += 1
+            var sequence = ""
+            while let next = characters.popFirst() {
+                sequence.append(next)
+                if next.isLetter { break }
+            }
+            if sequence.hasSuffix("H") {
+                let parts = sequence.dropFirst().dropLast().split(separator: ";").compactMap { Int($0) }
+                cursor = [parts[0] - 1, parts[1] - 1]
             }
         }
-        #expect(tails.count == 32)
-        #expect(overwritten == 0)
+        var mismatches = 0
+        for row in 0..<grid.size.rows {
+            for column in 0..<grid.size.columns {
+                let cell = grid[column, row]
+                let written = screen[[row, column]]
+                if cell.isWideTail ? written != nil : written != cell.character {
+                    mismatches += 1
+                }
+            }
+        }
+        #expect(mismatches == 0)
     }
 
     @Test func resizedFrameIsRedrawnInFull() {

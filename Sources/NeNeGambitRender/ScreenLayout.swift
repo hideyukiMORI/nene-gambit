@@ -11,12 +11,21 @@ struct ScreenLayout: Sendable {
     let footerRow: Int
     let isCompact: Bool
 
-    static let large = ScreenLayout(
-        board: BoardFrame(column: 3, row: 2, squareWidth: 7, squareHeight: 3), hudColumn: 61, hudWidth: 37, hudRows: 24,
-        commsRow: 27, footerRow: 29, isCompact: false)
-    static let compact = ScreenLayout(
-        board: BoardFrame(column: 3, row: 2, squareWidth: 3, squareHeight: 1), hudColumn: 31, hudWidth: 35, hudRows: 10,
-        commsRow: 12, footerRow: 14, isCompact: true)
+    /// 大きな盤（100×30 以上）。駒記号なら 1 升 6 桁、英字なら 7 桁。
+    static func large(_ glyphs: GlyphSet) -> ScreenLayout {
+        let width = glyphs == .symbols ? 6 : 7
+        return ScreenLayout(
+            board: BoardFrame(column: 3, row: 2, squareWidth: width, squareHeight: 3), hudColumn: 61, hudWidth: 37,
+            hudRows: 24, commsRow: 27, footerRow: 29, isCompact: false)
+    }
+
+    /// 縮小版。駒記号なら 1 升 4 桁で盤が 8 桁広くなり、HUD を右へ寄せる。
+    static func compact(_ glyphs: GlyphSet) -> ScreenLayout {
+        let width = glyphs == .symbols ? 4 : 3
+        return ScreenLayout(
+            board: BoardFrame(column: 3, row: 2, squareWidth: width, squareHeight: 1), hudColumn: 3 + 8 * width + 4,
+            hudWidth: 35, hudRows: 10, commsRow: 12, footerRow: 14, isCompact: true)
+    }
 
     func draw(_ state: ScreenState, into grid: inout Grid) {
         let glyphs = FrameGlyphs.of(state.options.traits.frame)
