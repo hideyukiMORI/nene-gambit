@@ -5,8 +5,9 @@
 「意図した規則 ID（または道具の規則名）で落ちること」を出力から確かめる。仕込まない複製（対照）では `make check` が
 exit 0 になることも確かめる。作業木そのものには触れない。
 
-違反を仕込むには Swift のソースが要るので、どの証明も同じ「足場」（依存グラフの正本どおりの 5 target・
-規則に沿った最小のソース）を置いてから 1 か所だけ壊す。足場は証明のための一時物で、作業木には入れない。
+違反を仕込むには Swift のソースが要るので、どの証明も同じ「足場」（依存グラフの正本どおりの target と、
+まだ作業木に無い target の最小のソース）を置いてから 1 か所だけ壊す。作業木にある target（Core とそのテスト）は
+本物をそのまま使う。足場は証明のための一時物で、作業木には入れない。
 
     python3 eng/prove-gates.py [--only P01 P02 ...]
 """
@@ -36,32 +37,18 @@ TARGETS = {
     "NeNeGambitTerminal": ("target", '"NeNeGambitRender"'),
     "nene-gambit": ("executableTarget",
                     '"NeNeGambitCore", "NeNeGambitEngine", "NeNeGambitRender", "NeNeGambitTerminal"'),
+    "NeNeGambitCoreTests": ("testTarget", '"NeNeGambitCore"'),
 }
 
 SOURCES = {
-    "Sources/NeNeGambitCore/Square.swift": """\
-/// 盤の升。証明用の最小の型。
-public struct Square: Hashable, Sendable {
-    public let index: Int
-
-    private init(index: Int) {
-        self.index = index
-    }
-
-    /// 0〜63 の升を作る。範囲外なら nil。
-    public static func make(_ index: Int) -> Square? {
-        (0..<64).contains(index) ? Square(index: index) : nil
-    }
-}
-""",
     "Sources/NeNeGambitEngine/Pick.swift": """\
 import NeNeGambitCore
 
 /// 注入された乱数源から升を選ぶ。証明用の最小の型。
 public enum Pick {
-    /// 0..<count から 1 つ選ぶ。
+    /// 0..<count の升から 1 つ選ぶ。
     public static func square(count: Int, using generator: inout some RandomNumberGenerator) -> Square? {
-        Square.make(Int.random(in: 0..<count, using: &generator))
+        Square.all[Int.random(in: 0..<count, using: &generator)]
     }
 }
 """,
@@ -289,11 +276,9 @@ PROOFS: list[Proof] = [
     Proof("P22", ["SWF-016", "CNF-011"], "テストで XCTest を import する",
           lambda r: write(r, "Tests/NeNeGambitCoreTests/ProbeTests.swift", "import XCTest\n\n/// 証明用。\nenum ProbeTests {}\n"),
           r"^CNF-011 Tests/NeNeGambitCoreTests/ProbeTests\.swift"),
-    Proof("P23", ["QLT-002", "CNF-009"], "target の警告設定を treatAllWarnings(as: .warning) にして未使用の定数を置く（ビルドは警告で通る）",
-          lambda r: (write(r, "Package.swift", package_swift({"NeNeGambitCore":
-              '.target(name: "NeNeGambitCore", swiftSettings: [.treatAllWarnings(as: .warning), .enableUpcomingFeature("ExistentialAny")])'})),
-                     write(r, "Sources/NeNeGambitCore/Probe.swift",
-                           "/// 証明用。\nenum Probe {\n    /// 証明用。\n    static func run() -> Int {\n        let unused = 1\n        return 2\n    }\n}\n")),
+    Proof("P23", ["QLT-002", "CNF-009"], "target の警告設定を treatAllWarnings(as: .warning) に緩める（警告の出るコードは置かない。設定そのものを拒むこと）",
+          lambda r: write(r, "Package.swift", package_swift({"NeNeGambitEngine":
+              '.target(name: "NeNeGambitEngine", dependencies: ["NeNeGambitCore"], swiftSettings: [.treatAllWarnings(as: .warning), .enableUpcomingFeature("ExistentialAny")])'})),
           r"^CNF-009 Package\.swift"),
     Proof("P24", ["QLT-002"], "未使用のローカル定数を置く（警告がエラーになること）",
           core_file("Probe.swift", "/// 証明用。\nenum Probe {\n    /// 証明用。\n    static func run() -> Int {\n        let unused = 1\n        return 2\n    }\n}\n"),
@@ -340,6 +325,14 @@ PROOFS: list[Proof] = [
     Proof("P45", ["QLT-012", "CNF-018"], "CI のジョブに draft を飛ばす if: を書く（スキップは成功として数えられる）",
           lambda r: edit(r, ".github/workflows/ci.yml", "    runs-on:", "    if: ${{ !github.event.pull_request.draft }}\n    runs-on:"),
           r"^CNF-018 \.github/workflows/ci\.yml:\d+: if: は使えない"),
+    Proof("P47", ["QLT-002"], "ソースの無いテスト target を manifest に足す（SwiftPM 自身が警告を出し、コンパイラの警告エラーの外にある）",
+          lambda r: (edit(r, "Package.swift", "    targets: [",
+                          f'    targets: [\n        .testTarget(name: "NeNeGambitEngineTests", dependencies: ["NeNeGambitCore", "NeNeGambitEngine"], {SETTINGS}),'),
+                     (r / "Tests/NeNeGambitEngineTests").mkdir(parents=True)),
+          r"swift-strict: SwiftPM かコンパイラが警告を出した"),
+    Proof("P48", ["QLT-001"], "perft の期待値を 1 つ変える（make check の中で swift test が実際に回って落ちること）",
+          lambda r: edit(r, "Tests/NeNeGambitCoreTests/PerftTests.swift", "counts: [20, 400,", "counts: [21, 400,"),
+          r"✘ Test matchesPublishedCounts"),
     Proof("P37", ["QLT-001"], ".swift-version を実際の版と違う 6.4.0 にする",
           lambda r: write(r, ".swift-version", "6.4.0\n"), r"tools: swift は 6\.4\.0 が要る"),
     Proof("P38", ["QLT-007"], "規約検査の CNF-013 の検出を壊す（検査器の単体テストが落ちること）",

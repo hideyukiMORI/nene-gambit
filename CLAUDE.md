@@ -52,6 +52,15 @@ target を足すときは `swiftSettings: [.treatAllWarnings(as: .error), .enabl
 
 FEN が読めない・合法でない指し手などは閉じた enum の結果型で返す。製品コードに `throw` / `try` / `catch` を書かない（ARC-010 / SWF-005・CNF-019）。
 
+### テストは release 構成で回り、公開 API だけを使う
+
+`make check` は `swift test -c release` を回す（perft の深さ 5 がデバッグでは遅すぎる・ADR 0004）。release では `@testable import` が使えないので、
+テストは公開 API だけで書く。テストのために API を公開しない（SWF-008）。
+
+### SwiftPM 自身の警告も失敗になる
+
+`eng/swift-strict.sh` が `swift build` / `swift test` の出力の `warning:` を見て落とす。テスト target を足したらソースも同じ PR で足す（空のテスト target は警告になる）。
+
 ### SwiftLint は静的バイナリ
 
 動的バイナリは glibc 2.35 では起動しない。`make bootstrap`（または `make check` の `tools` 段）が `.tools/swiftlint` に静的バイナリを入れる。
@@ -103,6 +112,6 @@ Waivers: none | WVR-NNNN
 
 現在のタスクは [docs/todo/current.md](docs/todo/current.md)。GitHub Issue が正で、そこは要約。
 
-- 動くもの: `make check`（target は 0 本・製品コードは無い）
-- 動かないもの: 製品そのもの。Phase 3 の最初は「指し手生成と perft（画面なし）」
+- 動くもの: `make check`・`NeNeGambitCore`（合法手生成・適用・FEN・メイトとステイルメイト。perft は 6 局面×深さ 5 で公表値と一致）
+- 動かないもの: 画面・端末・評価・探索
 - 施主の未決（指示書の Q4〜Q10）を自分で埋めない。画面に出す前に Q4 の切り替え方・Q5・Q6・Q8 を、評価と探索の前に Q7 を聞く
