@@ -21,6 +21,18 @@ swift build -c release
 端末は 67×15 以上が要る（駒記号なら 75×15。100×30 以上で大きな盤になる）。24 ビットの色は Windows Terminal（`WT_SESSION`）か `COLORTERM=truecolor` のときに使い、それ以外は 256 色で描く。
 罫線の文字が 2 桁で描かれる端末では、自動で ASCII の枠に切り替わる。
 
+## ダウンロード（Linux x86_64）
+
+[Releases](https://github.com/hideyukiMORI/nene-gambit/releases) から `nene-gambit-<版>-linux-x86_64.tar.gz` と `SHA256SUMS` を同じフォルダに落として:
+
+```bash
+sha256sum --check SHA256SUMS
+tar -xzf nene-gambit-0.1.0-linux-x86_64.tar.gz
+./nene-gambit-0.1.0-linux-x86_64/nene-gambit
+```
+
+glibc 2.35 以上（Ubuntu 22.04 以降）で動く。Swift は要らない。
+
 ## 開発
 
 ```bash
