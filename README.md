@@ -36,7 +36,7 @@ The whole script is [install.sh](install.sh), about 45 lines. Reading it before 
 <summary>Install by hand</summary>
 
 ```bash
-v=0.1.0
+v=0.1.1
 curl -fsSL -O https://github.com/hideyukiMORI/nene-gambit/releases/download/v$v/nene-gambit-$v-linux-x86_64.tar.gz \
            -O https://github.com/hideyukiMORI/nene-gambit/releases/download/v$v/SHA256SUMS
 sha256sum --check SHA256SUMS
