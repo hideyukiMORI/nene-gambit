@@ -20,7 +20,7 @@ ADR は「なぜそう決めたか」「何を却下したか」を書く。
 | [0002](0002-swift-testing-only.md) | テスト枠組みは Swift Testing だけにする | 受理 |
 | [0003](0003-board-and-move-representation.md) | 盤は 64 升の値型の配列、指し手は「元・先・昇格先」の 1 表記、適用は新しい局面を返す | 受理 |
 | [0004](0004-perft-runs-in-release-configuration.md) | perft は深さ 5 まで全部を release 構成のテストでゲートに回す | 受理 |
-| [0005](0005-screen-layout-and-glyph-width.md) | 画面は 1 文字 1 桁の格子で、盤は 1 升 3 桁、HUD の文言は ASCII の英語 | 受理（一部を 0007 で置換） |
+| [0005](0005-screen-layout-and-glyph-width.md) | 画面は 1 文字 1 桁の格子で、盤は 1 升 3 桁、HUD の文言は ASCII の英語 | 受理（一部を 0007 で置換・ポーンの字形を 0013 で置換） |
 | [0006](0006-terminal-loop-and-signals.md) | 並行は 1 本のループだけ、シグナルは原子的な旗、異常終了はハンドラが端末を戻す | 受理 |
 | [0007](0007-cyber-hud-themes-and-banter.md) | サイバー HUD: 罫線の枠（幅を測って落とす）・2 段の配置・12 テーマ・キャラクターの発言 | 受理（0005 の一部を置換） |
 | [0008](0008-windows-terminal-colors-and-wide-symbols.md) | Windows Terminal では 24 ビット色、256 色は最近傍、駒記号の幅は端末に測らせる | 受理（3 を 0010 で置換） |
@@ -28,3 +28,4 @@ ADR は「なぜそう決めたか」「何を却下したか」を書く。
 | [0010](0010-symbols-occupy-two-cells.md) | 駒記号は常に 2 桁ぶんの字形として扱い、駒記号のときは升を偶数桁にする | 受理（0008 の 3 を置換・1 を 0011 で置換） |
 | [0011](0011-paint-the-cell-beside-symbols.md) | 駒記号の右隣のセルは升の色の空白として書く | 受理（0010 の 1 を置換） |
 | [0012](0012-release-pipeline.md) | 版の入力は Version.swift の 1 か所、配布物は静的リンクの 1 経路で作り、検査してから梱包する | 受理 |
+| [0013](0013-outline-pawn-symbol.md) | 駒記号のポーンは輪郭の ♙（U+2659）にする。♟ は絵文字の字形で描かれ色が効かない | 受理（0005 の決定 3 のポーンを置換） |

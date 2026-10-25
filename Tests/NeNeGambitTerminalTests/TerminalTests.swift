@@ -77,7 +77,7 @@ struct TerminalTests {
     @Test(arguments: [1, 2])
     func everyCellLandsWhateverTheTerminalAdvances(advance: Int) {
         let grid = Self.grid(.symbols)
-        let symbols: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{265F}"]
+        let symbols: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{2659}"]
         var screen: [[Int]: Character] = [:]
         var cursor = [0, 0]
         var characters = Array(Self.text(FrameEncoder.encode(grid, previous: nil, colors: .trueColor)))[...]

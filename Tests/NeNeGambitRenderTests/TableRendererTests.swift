@@ -113,6 +113,22 @@ struct TableRendererTests {
         #expect(GlyphSet.letters.toggled == .symbols)
     }
 
+    /// 駒記号に絵文字の性質を持つ文字を使わない。U+265F は絵文字の字形で描かれ、前景色が効かず白と黒が同じ色になる（Issue #24・ADR 0013）。
+    @Test func symbolsAvoidEmojiCodePoints() {
+        let grid = TableRenderer.render(Self.state(Self.series(), glyphs: .symbols), size: TableRenderer.largeSize)
+        var pieces: Set<Character> = []
+        for row in 0..<grid.size.rows {
+            for column in 0..<grid.size.columns {
+                let character = grid[column, row].character
+                if character.unicodeScalars.contains(where: { (0x2654...0x265F).contains($0.value) }) {
+                    pieces.insert(character)
+                }
+            }
+        }
+        #expect(pieces.count == 6)
+        #expect(pieces.allSatisfy { $0.unicodeScalars.allSatisfy { !$0.properties.isEmoji } }, "\(pieces)")
+    }
+
     @Test func lastMoveIsBracketed() throws {
         var generator = SplitMix64(seed: 3)
         let series = GameSeries.starting(using: &generator).advanced(using: &generator)
