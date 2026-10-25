@@ -13,25 +13,33 @@ struct TableRendererTests {
     static func state(
         _ series: GameSeries, glyphs: GlyphSet = .letters, theme: Theme = .standard, frame: FrameStyle = .boxDrawing
     ) -> ScreenState {
-        let traits = TerminalTraits(frame: frame, wideSymbols: false, colors: .trueColor)
+        let traits = TerminalTraits(frame: frame, colors: .trueColor)
         return ScreenState(
             series: series, options: DisplayOptions(glyphs: glyphs, theme: theme, traits: traits), seed: 42,
             countdown: nil)
     }
 
-    /// 端末が駒記号を 2 桁で描くとき: 駒は升の中央の桁から 2 桁、右隣のセルは何も書かない右半分、右の括弧は 1 桁右。
-    @Test func wideSymbolsTakeTwoCellsAndShiftTheClosingBracket() throws {
+    /// 駒記号は約 2 桁の幅で描かれる（Issue #13）: 升は偶数桁（大きな盤 6・縮小版 4）で、字形は升の中央の 2 桁、
+    /// 右半分のセルには何も書かず、直前の手の括弧はその両隣で升の中に収まる。
+    @Test(arguments: [(true, 6), (false, 4)])
+    func symbolsSitInTheMiddleTwoCellsOfEvenSquares(large: Bool, width: Int) throws {
         var generator = SplitMix64(seed: 3)
         let series = GameSeries.starting(using: &generator).advanced(using: &generator)
         let move = try #require(series.game.moves.last)
-        let traits = TerminalTraits(frame: .boxDrawing, wideSymbols: true, colors: .trueColor)
-        let options = DisplayOptions(glyphs: .symbols, theme: .standard, traits: traits)
-        let grid = TableRenderer.render(
-            ScreenState(series: series, options: options, seed: 1, countdown: nil), size: TableRenderer.largeSize)
-        let center = 3 + move.to.file * 7 + 3
-        let row = 2 + (7 - move.to.rank) * 3 + 1
-        #expect(!grid[center, row].isWideTail && grid[center + 1, row].isWideTail)
-        #expect(grid[center - 1, row].character == "[" && grid[center + 2, row].character == "]")
+        let size = large ? TableRenderer.largeSize : ScreenSize(columns: 75, rows: 15)
+        let grid = TableRenderer.render(Self.state(series, glyphs: .symbols), size: size)
+        let left = 3 + move.to.file * width
+        let row = large ? 2 + (7 - move.to.rank) * 3 + 1 : 2 + (7 - move.to.rank)
+        let start = left + width / 2 - 1
+        #expect(!grid[start, row].isWideTail && grid[start + 1, row].isWideTail)
+        #expect(start - left == (left + width - 1) - (start + 1), "字形の左右の余白が同じ")
+        #expect(grid[start - 1, row].character == "[" && grid[start + 2, row].character == "]")
+        #expect(start - 1 >= left && start + 2 < left + width)
+    }
+
+    @Test func compactSymbolsNeedSeventyFiveColumns() {
+        let grid = TableRenderer.render(Self.state(Self.series(), glyphs: .symbols), size: TableRenderer.minimumSize)
+        #expect(Self.line(grid, 0).hasPrefix("TERMINAL TOO SMALL (NEED 75x15)"))
     }
 
     /// 格子の 1 行を文字列として読む。
@@ -100,7 +108,7 @@ struct TableRendererTests {
 
     @Test func symbolsReplaceLetters() {
         let grid = TableRenderer.render(Self.state(Self.series(), glyphs: .symbols), size: TableRenderer.largeSize)
-        #expect(grid[6 + 4 * 7, 24].character == "\u{265A}")
+        #expect(grid[3 + 4 * 6 + 2, 24].character == "\u{265A}")
         #expect(GlyphSet.letters.toggled == .symbols)
     }
 

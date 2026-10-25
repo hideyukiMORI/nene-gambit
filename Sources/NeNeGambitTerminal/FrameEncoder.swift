@@ -27,8 +27,10 @@ public enum FrameEncoder {
                     styled = cell
                 }
                 out += Array(String(cell.character).utf8)
-                let advance = column + 1 < grid.size.columns && grid[column + 1, row].isWideTail ? 2 : 1
-                cursor = column + advance < grid.size.columns ? position + advance : nil
+                // 2 桁ぶんの字形の後は、端末がカーソルを 1 進めるか 2 進めるかが端末とフォントで違う（Issue #13）。
+                // 位置を当てにせず、次に書くセルでカーソルを明示的に動かす
+                let followedByTail = column + 1 < grid.size.columns && grid[column + 1, row].isWideTail
+                cursor = followedByTail || column + 1 >= grid.size.columns ? nil : position + 1
             }
         }
         if !out.isEmpty {

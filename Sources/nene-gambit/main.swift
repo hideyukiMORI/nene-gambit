@@ -39,11 +39,8 @@ let colors: ColorMode = {
 }()
 
 /// 罫線の文字が 1 桁で描かれる端末だけ罫線の枠を使い、それ以外（2 桁・答えが無い）は ASCII の枠へ落とす（ADR 0007）。
-/// 駒記号が 2 桁で描かれる端末では、駒記号を 2 桁として配置する（ADR 0008）。
-let traits = TerminalTraits(
-    frame: Console.columnsAdvanced(by: "─") == 1 ? .boxDrawing : .ascii,
-    wideSymbols: Console.columnsAdvanced(by: "\u{265A}") == 2,
-    colors: colors)
+/// 駒記号の幅は問い合わせない（Windows Terminal は 1 桁と答えて約 2 桁で描く・ADR 0010）。
+let traits = TerminalTraits(frame: Console.columnsAdvanced(by: "─") == 1 ? .boxDrawing : .ascii, colors: colors)
 
 var systemRandom = SystemRandomNumberGenerator()
 let display = DisplayOptions(glyphs: options.glyphs, theme: options.theme, traits: traits)

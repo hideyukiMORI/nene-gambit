@@ -5,8 +5,8 @@ import NeNeGambitEngine
 ///
 /// 配置はデザインのキャンバスの「B2」に従う（ADR 0007）: 上端に題とシード、左に盤、右に HUD、盤の下に COMMS の 2 行、下端にキーのヘルプ。
 public enum TableRenderer {
-    /// 縮小版がちょうど入る大きさ（これより小さければ 1 行の文言だけ）。
-    public static let minimumSize = LayoutKind.compactSize
+    /// 英字の縮小版がちょうど入る大きさ（これより小さければ 1 行の文言だけ）。
+    public static let minimumSize = LayoutKind.compactSize(.letters)
     /// 大きな盤がちょうど入る大きさ。
     public static let largeSize = LayoutKind.largeSize
 
@@ -14,13 +14,14 @@ public enum TableRenderer {
     public static func render(_ state: ScreenState, size: ScreenSize) -> Grid {
         let theme = state.options.theme
         var grid = Grid.filled(size, with: Cell(character: " ", foreground: theme.text, background: theme.ground))
-        switch LayoutKind.fitting(size) {
+        let glyphs = state.options.glyphs
+        switch LayoutKind.fitting(size, glyphs: glyphs) {
         case .large:
-            ScreenLayout.large.draw(state, into: &grid)
+            ScreenLayout.large(glyphs).draw(state, into: &grid)
         case .compact:
-            ScreenLayout.compact.draw(state, into: &grid)
+            ScreenLayout.compact(glyphs).draw(state, into: &grid)
         case .tooSmall:
-            let message = Wording.tooSmall(need: minimumSize)
+            let message = Wording.tooSmall(need: LayoutKind.compactSize(glyphs))
             grid.write(message, column: 0, row: 0, colors: CellColors(foreground: theme.text, background: theme.ground))
         }
         return grid
