@@ -26,7 +26,10 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 
 🔴 **文書整合検査（CNF-006）は「`| <規則 ID> |` で始まる行」を active の証明として読む。** active に書き換える規則は、
 必ずこの表に規則 ID を行頭にして 1 行足す。
+表は `python3 eng/prove-gates.py`（測り直す）か `--render`（測らずに作り直す）が gate-proofs.json と QUALITY_GATES.md の active の行から生成する。手で書かない。
+規則を active に書き換えたら、**先に `--render` で表を作ってから**測り直す（複製の中で CNF-006 が「証明行が無い」で先に落ち、対照まで落ちる）。
 
+<!-- proofs:active:start -->
 | 規則 | 最小の違反 | 検証経路 | 実測 |
 | --- | --- | --- | --- |
 | ARC-002 | P01: Core が宣言していない Engine を import する<br>P02: Terminal が正本に無い Core への依存を宣言する（循環は作らない） | `make check` | P01: exit 2・`Sources/NeNeGambitCore/Probe.swift:1:8: error: no such module 'NeNeGambitEngine'`<br>P02: exit 2・`CNF-010 Package.swift:17: target NeNeGambitTerminal の依存が正本と違う（余分: NeNeGambitCore / 不足: なし）` |
@@ -44,14 +47,15 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 | SWF-014 | P03: Core が Foundation を import する | `make check` | P03: exit 2・`CNF-011 Sources/NeNeGambitCore/Probe.swift:1: NeNeGambitCore は Foundation を import できない` |
 | SWF-015 | P19: waiver 無しの swiftlint:disable:next で強制アンラップを抑制する<br>P20: @diagnose で非推奨の警告を消す<br>P21: 期限切れの active な waiver を台帳と索引に置く<br>P44: 有効にした SwiftLint の 16 規則それぞれの違反を 1 ファイルに置く（設定の全規則が実際に発火すること） | `make check` | P19: exit 2・`CNF-003 Sources/nene-gambit/main.swift:9: 直前行に有効な // Waiver: WVR-NNNN が無い`<br>P20: exit 2・`CNF-003 Sources/NeNeGambitCore/Probe.swift:3: @available(..., deprecated) は非推奨の警告を隠す`<br>P21: exit 2・`CNF-004 docs/waivers/WVR-0001:1: 期限切れの waiver（2026-10-24）`<br>P44: exit 2・`Sources/NeNeGambitCore/Probe.swift:584:22: error: Blanket Disable Command Violation: Use 'next', 'this' or 'previous' in` |
 | SWF-016 | P22: テストで XCTest を import する | `make check` | P22: exit 2・`CNF-011 Tests/NeNeGambitCoreTests/ProbeTests.swift:1: NeNeGambitCoreTests は XCTest を import できない` |
-| QLT-001 | P35: CI に make check 以外の run（swift build）を足す<br>P37: .swift-version を実際の版と違う 6.4.0 にする | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:29: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build`<br>P37: exit 2・`tools: swift は 6.4.0 が要るが、起動できない: The swift version file `.swift-version` requires toolchain version 6.4.0, which is not` |
+| QLT-001 | P35: CI に make check 以外の run（swift build）を足す<br>P37: .swift-version を実際の版と違う 6.4.0 にする | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:30: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build`<br>P37: exit 2・`tools: swift は 6.4.0 が要るが、起動できない: The swift version file `.swift-version` requires toolchain version 6.4.0, which is not` |
 | QLT-002 | P23: target の警告設定を treatAllWarnings(as: .warning) にして未使用の定数を置く（ビルドは警告で通る）<br>P24: 未使用のローカル定数を置く（警告がエラーになること） | `make check` | P23: exit 2・`CNF-009 Package.swift:8: target NeNeGambitCore に .treatAllWarnings(as: .error) が無い`<br>P24: exit 2・`Sources/NeNeGambitCore/Probe.swift:5:13: error: initialization of immutable value 'unused' was never used; consider repl` |
 | QLT-003 | P25: 名前に baseline を含むファイルを置く<br>P26: .gitignore で Sources を検査から隠す | `make check` | P25: exit 2・`CNF-005 swiftlint-baseline.json:1: 名前に baseline を含むファイル`<br>P26: exit 2・`CNF-005 .gitignore:2: 検査の対象から外れる無視の指定 'Sources/NeNeGambitCore/Hidden.swift'（生成物の置き場だけを無視する）` |
 | QLT-004 | P27: インデントを 2 桁にする<br>P28: Core のディレクトリに入れ子の .swiftlint.yml を置く | `make check` | P27: exit 2・`Sources/NeNeGambitRender/Cell.swift:3:1: error: [Indentation] indent by 2 spaces`<br>P28: exit 2・`CNF-007 Sources/NeNeGambitCore/.swiftlint.yml:1: ゲートが読まない場所の検査設定（入れ子の設定は道具が勝手に拾う）` |
-| QLT-005 | P35: CI に make check 以外の run（swift build）を足す | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:29: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build` |
+| QLT-005 | P35: CI に make check 以外の run（swift build）を足す | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:30: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build` |
 | QLT-006 | P02: Terminal が正本に無い Core への依存を宣言する（循環は作らない）<br>P03: Core が Foundation を import する | `make check` | P02: exit 2・`CNF-010 Package.swift:17: target NeNeGambitTerminal の依存が正本と違う（余分: NeNeGambitCore / 不足: なし）`<br>P03: exit 2・`CNF-011 Sources/NeNeGambitCore/Probe.swift:1: NeNeGambitCore は Foundation を import できない` |
 | QLT-007 | P29: SourceKit が要る規則（statement_position）を有効にする（静的バイナリが黙って飛ばす）<br>P38: 規約検査の CNF-013 の検出を壊す（検査器の単体テストが落ちること） | `make check` | P29: exit 2・`lint: 有効にした規則が実行されていない（CNF-007）`<br>P38: exit 2・`FAILED (failures=1)` |
-| QLT-011 | P33: 許可リストに無い外部パッケージを manifest に書く（解決に行かせないため狭い検査で）<br>P34: SwiftLint の lock の SHA-256 を 1 文字変え、道具を入れ直させる | `make conformance`<br>`make tools` | P33: exit 2・`CNF-009 Package.swift:7: 許可リストに無い外部パッケージ`<br>P34: exit 2・`/tmp/tmp.8JOQ2EZdUL/swiftlint_linux_amd64.zip: FAILED` |
+| QLT-011 | P33: 許可リストに無い外部パッケージを manifest に書く（解決に行かせないため狭い検査で）<br>P34: SwiftLint の lock の SHA-256 を 1 文字変え、道具を入れ直させる | `make conformance`<br>`make tools` | P33: exit 2・`CNF-009 Package.swift:7: 許可リストに無い外部パッケージ`<br>P34: exit 2・`/tmp/tmp.37udgxe7mj/swiftlint_linux_amd64.zip: FAILED` |
+| QLT-012 | P45: CI のジョブに draft を飛ばす if: を書く（スキップは成功として数えられる）<br>P46: draft の PR に push する（CI のジョブはスキップでなく失敗し、PR はマージできない） | GitHub Actions run 40171721542（PR #2・head bb025a7・2026-10-25）<br>`make check` | P45: exit 2・`CNF-018 .github/workflows/ci.yml:16: if: は使えない（スキップされた必須 check は成功として数えられる）`<br>P46: step `eng/ci-require-ready.sh` が `ci: PR が draft なのでフルゲートを回さない。Ready にすると回る（QLT-012）` で exit 1。必須 check `check` は FAILURE・`mergeStateStatus` は `BLOCKED`。直す前（run 40171486988）はスキップで `CLEAN` だった |
 | CNF-001 | P15: 型を BoardHelper と名付ける | `make check` | P15: exit 2・`CNF-001 Sources/NeNeGambitCore/BoardHelper.swift:2: 総称名の型 BoardHelper` |
 | CNF-002 | P16: 1 ファイルに最上位の型を 2 つ置く | `make check` | P16: exit 2・`CNF-002 Sources/NeNeGambitCore/Probe.swift:5: 主要宣言が 2 個ある: Probe, Other` |
 | CNF-003 | P19: waiver 無しの swiftlint:disable:next で強制アンラップを抑制する<br>P20: @diagnose で非推奨の警告を消す | `make check` | P19: exit 2・`CNF-003 Sources/nene-gambit/main.swift:9: 直前行に有効な // Waiver: WVR-NNNN が無い`<br>P20: exit 2・`CNF-003 Sources/NeNeGambitCore/Probe.swift:3: @available(..., deprecated) は非推奨の警告を隠す` |
@@ -69,11 +73,12 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 | CNF-015 | P39: Decodable を使う | `make check` | P39: exit 2・`CNF-015 Sources/NeNeGambitCore/Probe.swift:2: Codable / Decodable / Encodable は使えない` |
 | CNF-016 | P09: 公開の格納 var を置く | `make check` | P09: exit 2・`CNF-016 Sources/NeNeGambitRender/Cell.swift:3: public の格納 var は外から変更できる（let か private(set) にする）` |
 | CNF-017 | P40: Core で print を呼ぶ | `make check` | P40: exit 2・`CNF-017 Sources/NeNeGambitCore/Probe.swift:5: print / readLine / exit 等は合成ルートだけ` |
-| CNF-018 | P35: CI に make check 以外の run（swift build）を足す<br>P36: CI のアクションをタグで指す | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:29: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build`<br>P36: exit 2・`CNF-018 .github/workflows/ci.yml:19: アクションを commit SHA で固定していない: actions/checkout@v7` |
+| CNF-018 | P35: CI に make check 以外の run（swift build）を足す<br>P36: CI のアクションをタグで指す<br>P45: CI のジョブに draft を飛ばす if: を書く（スキップは成功として数えられる） | `make check` | P35: exit 2・`CNF-018 .github/workflows/ci.yml:30: CI で許す run はツールチェーン導入とゲートの 1 行だけ: swift build`<br>P36: exit 2・`CNF-018 .github/workflows/ci.yml:19: アクションを commit SHA で固定していない: actions/checkout@v7`<br>P45: exit 2・`CNF-018 .github/workflows/ci.yml:16: if: は使えない（スキップされた必須 check は成功として数えられる）` |
 | CNF-019 | P11: 製品コードに throws を書く | `make check` | P11: exit 2・`CNF-019 Sources/NeNeGambitCore/Probe.swift:4: 期待される失敗は閉じた結果型で返す（throw / try / catch は使えない）` |
 | CNF-020 | P12: Any を使う | `make check` | P12: exit 2・`CNF-020 Sources/NeNeGambitCore/Probe.swift:4: Any / AnyObject / AnyHashable / AnyClass は使えない` |
-| GIT-003 | P41: 形の合わないコミット（--no-verify でフックを迂回）<br>P42: 形の合わないコミットをフック付きで作ろうとする（フックが拒む） | `git -c user.name=proof -c user.email=proof@example.invalid commit --allow-empty -m update stuff`<br>`make check` | P41: exit 2・`GIT-003 7144829: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci`<br>P42: exit 1・`GIT-003 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）` |
-| GIT-004 | P43: `main` へ PR を経ずに直接 push する（`git push origin HEAD:main`）・同じ commit を `--force` で push する | `git push`（使い捨ての clone から・2026-10-25） | P43: 2 回とも `remote rejected`・`GH013: Repository rule violations found for refs/heads/main`・`Changes must be made through a pull request.`・`Required status check "check" is expected.`。push 後も `refs/heads/main` は `57a01c0` のまま |
+| GIT-003 | P41: 形の合わないコミット（--no-verify でフックを迂回）<br>P42: 形の合わないコミットをフック付きで作ろうとする（フックが拒む） | `git -c user.name=proof -c user.email=proof@example.invalid commit --allow-empty -m update stuff`<br>`make check` | P41: exit 2・`GIT-003 1969017: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci`<br>P42: exit 1・`GIT-003 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）` |
+| GIT-004 | P43: `main` へ PR を経ずに直接 push する（`git push origin HEAD:main`）・同じ commit を `--force` で push する | git push（使い捨ての clone から・2026-10-25） | P43: 2 回とも `remote rejected`・`GH013: Repository rule violations found for refs/heads/main`・`Changes must be made through a pull request.`・`Required status check "check" is expected.`。push 後も `refs/heads/main` は `57a01c0` のまま |
+<!-- proofs:active:end -->
 
 **復帰の確認**: 対照 P00（足場だけ・違反なし）と P00b（足場を置かない作業木そのまま）が、どちらも `make check` で exit 0（`make check: 緑`）。
 各証明は対照と同じ足場に違反を 1 つ足しただけなので、「仕込みを戻すと緑」は P00 が示す。
@@ -84,6 +89,7 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 
 ### 1-b. 証明の一覧
 
+<!-- proofs:list:start -->
 | # | 規則 | 仕込んだ違反 | 実行したタスク | 結果 | 判定 |
 | --- | --- | --- | --- | --- | --- |
 | P00 | 対照 | 対照: 足場だけ（違反なし）。合成ルートが時計・乱数・CommandLine・print を使い、Terminal が withUnsafe を使う | `make check` | exit 0 | pass |
@@ -124,6 +130,7 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 | P34 | QLT-011 | SwiftLint の lock の SHA-256 を 1 文字変え、道具を入れ直させる | `make tools` | exit 2 | pass |
 | P35 | QLT-001, CNF-018, QLT-005 | CI に make check 以外の run（swift build）を足す | `make check` | exit 2 | pass |
 | P36 | CNF-018 | CI のアクションをタグで指す | `make check` | exit 2 | pass |
+| P45 | QLT-012, CNF-018 | CI のジョブに draft を飛ばす if: を書く（スキップは成功として数えられる） | `make check` | exit 2 | pass |
 | P37 | QLT-001 | .swift-version を実際の版と違う 6.4.0 にする | `make check` | exit 2 | pass |
 | P38 | QLT-007 | 規約検査の CNF-013 の検出を壊す（検査器の単体テストが落ちること） | `make check` | exit 2 | pass |
 | P39 | CNF-015 | Decodable を使う | `make check` | exit 2 | pass |
@@ -131,7 +138,9 @@ CI: GitHub Actions `ubuntu-22.04` / Swift 6.4.1（固定の tarball・`eng/insta
 | P41 | GIT-003 | 形の合わないコミット（--no-verify でフックを迂回） | `make check` | exit 2 | pass |
 | P44 | SWF-002, SWF-004, SWF-005, SWF-006, SWF-012, SWF-015 | 有効にした SwiftLint の 16 規則それぞれの違反を 1 ファイルに置く（設定の全規則が実際に発火すること） | `make check` | exit 2 | pass |
 | P42 | GIT-003 | 形の合わないコミットをフック付きで作ろうとする（フックが拒む） | `git -c user.name=proof -c user.email=proof@example.invalid commit --allow-empty -m update stuff` | exit 1 | pass |
-
+| P43 | GIT-004 | `main` へ PR を経ずに直接 push する（`git push origin HEAD:main`）・同じ commit を `--force` で push する | git push（使い捨ての clone から・2026-10-25） | 第 1-a 節 | pass |
+| P46 | QLT-012 | draft の PR に push する（CI のジョブはスキップでなく失敗し、PR はマージできない） | GitHub Actions run 40171721542（PR #2・head bb025a7・2026-10-25） | 第 1-a 節 | pass |
+<!-- proofs:list:end -->
 
 ---
 

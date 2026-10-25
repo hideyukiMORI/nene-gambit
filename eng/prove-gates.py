@@ -314,7 +314,7 @@ PROOFS: list[Proof] = [
                          "  - blanket_disable_command # SWF-015\n  - statement_position # SWF-012\n"),
           r"有効にした規則が実行されていない（CNF-007）"),
     Proof("P30", ["CNF-006"], "未定義の規則 ID を文書に書く",
-          lambda r: edit(r, "docs/todo/current.md", "## 次の 1 手", "ARC-0" + "99 を参照する。\n\n## 次の 1 手"),
+          lambda r: edit(r, "docs/todo/current.md", "## 次の 1 手", UNDEFINED_ID + " を参照する。\n\n## 次の 1 手"),
           r"^CNF-006 docs/todo/current\.md"),
     Proof("P31", ["CNF-006"], "証明行の無い規則をマトリクスで active にする（本文も合わせて書き換える）",
           lambda r: (edit(r, "docs/QUALITY_GATES.md", "\n| QLT-008 | planned |", "\n| QLT-008 | active |"),
@@ -362,6 +362,62 @@ PROOFS: list[Proof] = [
           command=["git", "-c", "user.name=proof", "-c", "user.email=proof@example.invalid", "commit", "--allow-empty", "-m", "update stuff"],
           scaffold=False),
 ]
+
+
+# 複製した木では再現できない（GitHub 側の）証明。観察した日・run・出力をそのまま書く。
+MANUAL = [
+    {"id": "P43", "rules": ["GIT-004"],
+     "violation": "`main` へ PR を経ずに直接 push する（`git push origin HEAD:main`）・同じ commit を `--force` で push する",
+     "command": "git push（使い捨ての clone から・2026-10-25）",
+     "evidence": "2 回とも `remote rejected`・`GH013: Repository rule violations found for refs/heads/main`・"
+                 "`Changes must be made through a pull request.`・`Required status check \"check\" is expected.`。"
+                 "push 後も `refs/heads/main` は `57a01c0` のまま"},
+    {"id": "P46", "rules": ["QLT-012"],
+     "violation": "draft の PR に push する（CI のジョブはスキップでなく失敗し、PR はマージできない）",
+     "command": "GitHub Actions run 40171721542（PR #2・head bb025a7・2026-10-25）",
+     "evidence": "step `eng/ci-require-ready.sh` が `ci: PR が draft なのでフルゲートを回さない。Ready にすると回る（QLT-012）` で exit 1。"
+                 "必須 check `check` は FAILURE・`mergeStateStatus` は `BLOCKED`。直す前（run 40171486988）はスキップで `CLEAN` だった"},
+]
+FAMILIES = ["ARC", "SWF", "QLT", "CNF", "GIT"]
+
+
+def render(doc: dict) -> None:
+    """gate-proofs.json から gate-proofs.md の 2 つの表を作り直す（手で貼らない）。"""
+    path = ROOT / "docs" / "quality" / "gate-proofs.md"
+    text = path.read_text(encoding="utf-8")
+    md = lambda t: t.replace("|", "｜").replace(UNDEFINED_ID, UNDEFINED_ID_SHOWN)  # noqa: E731
+    by: dict[str, list[dict]] = {}
+    for r in doc["results"]:
+        for rule in r["rules"]:
+            by.setdefault(rule, []).append(
+                {"id": r["id"], "violation": r["violation"], "command": f"`{r['command']}`",
+                 "evidence": f"exit {r['exit']}・`{md((r['evidence'] or [''])[0][:120])}`"})
+    for m in MANUAL:
+        for rule in m["rules"]:
+            by.setdefault(rule, []).append(m)
+    active = [ln.split("|")[1].strip() for ln in (ROOT / "docs/QUALITY_GATES.md").read_text(encoding="utf-8").splitlines()
+              if re.match(r"^\| [A-Z]{3}-\d{3} \| active \|", ln)]
+    rows = ["| 規則 | 最小の違反 | 検証経路 | 実測 |", "| --- | --- | --- | --- |"]
+    for rule in sorted(active, key=lambda x: (FAMILIES.index(x[:3]), x)):
+        ps = by.get(rule, [])
+        rows.append("| %s | %s | %s | %s |" % (
+            rule, "<br>".join(f"{p['id']}: {md(p['violation'])}" for p in ps),
+            "<br>".join(sorted({p["command"] for p in ps})),
+            "<br>".join(f"{p['id']}: {p['evidence']}" for p in ps)))
+    listing = ["| # | 規則 | 仕込んだ違反 | 実行したタスク | 結果 | 判定 |", "| --- | --- | --- | --- | --- | --- |"]
+    for r in doc["results"]:
+        listing.append(f"| {r['id']} | {', '.join(r['rules']) or '対照'} | {md(r['violation'])} | `{r['command']}` | exit {r['exit']} | {r['verdict']} |")
+    for m in MANUAL:
+        listing.append(f"| {m['id']} | {', '.join(m['rules'])} | {md(m['violation'])} | {m['command']} | 第 1-a 節 | pass |")
+    for name, body in (("active", rows), ("list", listing)):
+        start, end = f"<!-- proofs:{name}:start -->", f"<!-- proofs:{name}:end -->"
+        a, b = text.index(start) + len(start), text.index(end)
+        text = text[:a] + "\n" + "\n".join(body) + "\n" + text[b:]
+    path.write_text(text, encoding="utf-8")
+
+
+UNDEFINED_ID = "ARC-0" + "99"
+UNDEFINED_ID_SHOWN = "ARC-0 99（仕込んだ未定義の ID。この文書自身が落ちないよう空白を入れて写した）"
 
 
 def copy_tree(dest: Path) -> None:
@@ -413,7 +469,11 @@ def run_proof(proof: Proof) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", nargs="*")
+    parser.add_argument("--render", action="store_true", help="測らずに gate-proofs.json から gate-proofs.md の表を作り直す")
     args = parser.parse_args()
+    if args.render:
+        render(json.loads(OUT.read_text(encoding="utf-8")))
+        return 0
     results = []
     for proof in PROOFS:
         if args.only and proof.id not in args.only:
@@ -435,7 +495,8 @@ def main() -> int:
             "results": results,
         }
         OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"wrote {OUT.relative_to(ROOT)}")
+        render(doc)
+        print(f"wrote {OUT.relative_to(ROOT)} と docs/quality/gate-proofs.md の表")
     return 0 if all(r["verdict"] == "pass" for r in results) else 1
 
 

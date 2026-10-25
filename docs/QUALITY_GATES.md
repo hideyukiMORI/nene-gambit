@@ -103,7 +103,7 @@ CI の起動条件は `ready_for_review`・`synchronize`・`edited`・`opened`�
 Ready の後の push は `synchronize` でフルゲートが回る。必須 check は head の SHA ごとに付き、ruleset の strict up-to-date が古い base を拒むので、
 古い成功 SHA・スキップされたジョブ・狭い検査は、通ったフルゲートの代わりにならない。
 
-- 機械強制: **planned** → CNF-018（`if:` の禁止）＋`eng/ci-require-ready.sh`（draft なら失敗）＋ruleset の必須 check と strict up-to-date
+- 機械強制: **active** → CNF-018（`if:` の禁止）＋`eng/ci-require-ready.sh`（draft なら失敗）＋ruleset の必須 check と strict up-to-date
 
 ### QLT-013 — 環境依存の主張は正直に名付ける
 
@@ -202,7 +202,7 @@ CNF-006 が「本文に定義があるのにここに行が無い」「本文と
 | QLT-009 | planned | カバレッジの層を置いていない |
 | QLT-010 | 不能 | PR の手続き |
 | QLT-011 | active | CNF-009＋lock の SHA-256 照合 |
-| QLT-012 | planned | CI の起動条件＋ruleset の strict |
+| QLT-012 | active | CNF-018（`if:` の禁止）＋`eng/ci-require-ready.sh`＋ruleset の必須 check と strict |
 | QLT-013 | planned | レビュー事項 |
 | CNF-001 | active | `eng/conformance.py` |
 | CNF-002 | active | `eng/conformance.py` |
