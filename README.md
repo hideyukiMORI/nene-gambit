@@ -54,7 +54,7 @@ nene-gambit
 | Key | |
 | --- | --- |
 | `q` | Quit (Ctrl+C works too; however it ends, your terminal is restored) |
-| `g` | Switch piece glyphs: letters `K Q R B N P` ⇔ chess symbols `♚♛♜♝♞♟` |
+| `g` | Switch piece glyphs: letters `K Q R B N P` ⇔ chess symbols `♚♛♜♝♞♙` |
 | `t` | Next color theme (12 in total) |
 
 | Option | |
