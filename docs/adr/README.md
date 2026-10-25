@@ -18,3 +18,5 @@ ADR は「なぜそう決めたか」「何を却下したか」を書く。
 | --- | --- | --- |
 | [0001](0001-strictness-is-mechanically-enforced.md) | 厳格さは機械で強制する | 受理 |
 | [0002](0002-swift-testing-only.md) | テスト枠組みは Swift Testing だけにする | 受理 |
+| [0003](0003-board-and-move-representation.md) | 盤は 64 升の値型の配列、指し手は「元・先・昇格先」の 1 表記、適用は新しい局面を返す | 受理 |
+| [0004](0004-perft-runs-in-release-configuration.md) | perft は深さ 5 まで全部を release 構成のテストでゲートに回す | 受理 |

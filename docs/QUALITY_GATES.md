@@ -28,7 +28,7 @@
 コマンド行の `-Xswiftc -warnings-as-errors` は manifest の `treatAllWarnings(as: .warning)` / `treatWarning` に負ける（実測 M8-h・M8-i）。
 🔴 既知ケースを漏らす `@unknown default` の診断は、警告エラー下でも warning のまま exit 0 になる（M1-e・M1-h）。これは CNF-013 が字句で拒否する。
 
-- 機械強制: **active** → CNF-009（manifest）＋`swift-format lint --strict`＋SwiftLint `strict: true`
+- 機械強制: **active** → CNF-009（manifest）＋`eng/swift-strict.sh`（SwiftPM 自身の警告）＋`swift-format lint --strict`＋SwiftLint `strict: true`
 
 ### QLT-003 — baseline を作らない
 
@@ -232,13 +232,13 @@ CNF-006 が「本文に定義があるのにここに行が無い」「本文と
 | 段 | 目的 | 実体 |
 | --- | --- | --- |
 | `tools` | 道具の版の一致 | `eng/install-tools.sh`（swift と swift-format は `.swift-version`、SwiftLint は `eng/swiftlint.lock`） |
-| `build` | 型安全・網羅性・警告ゼロ | `swift build`（警告のエラー化は manifest） |
+| `build` | 型安全・網羅性・警告ゼロ | `eng/swift-strict.sh swift build`（警告のエラー化は manifest。SwiftPM 自身の警告も落とす） |
 | `format` | 文字列としての正本 | `swift-format lint --strict --configuration .swift-format`（全 Swift ファイル） |
 | `lint` | 構造と複雑度 | `eng/lint.sh`（SwiftLint 0.65.1 `--strict`・規則の飛ばしで失敗） |
 | `conformance` | NeNe Gambit 固有・API 単位の禁止・アーキテクチャ・文書整合 | `python3 eng/conformance.py` |
 | `conformance-test` | 規約検査の正例・反例 | `python3 -m unittest discover -s eng/tests` |
+| `test` | 振る舞い（perft を 6 局面×深さ 5 で公表値と照合・FEN・局面の不変条件） | `eng/swift-strict.sh swift test -c release`（ADR 0004・約 34 秒） |
 | `commits` | コミットの形 | `eng/validate-commit-message.py --range $(BASE)..HEAD` |
-| 単体テスト | 振る舞い | **まだ無い**（テスト target が無い木の `swift test` は exit 1・X-c。Phase 3 で結線） |
 | カバレッジ | 中核の検証密度 | **まだ無い**（QLT-009） |
 | 依存 | 再現性 | 外部依存 0。CNF-009 が許可リスト外を拒否 |
 
