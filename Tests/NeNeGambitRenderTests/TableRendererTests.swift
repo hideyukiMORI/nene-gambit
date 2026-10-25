@@ -19,8 +19,8 @@ struct TableRendererTests {
             countdown: nil)
     }
 
-    /// 駒記号は約 2 桁の幅で描かれる（Issue #13）: 升は偶数桁（大きな盤 6・縮小版 4）で、字形は升の中央の 2 桁、
-    /// 右半分のセルには何も書かず、直前の手の括弧はその両隣で升の中に収まる。
+    /// 駒記号は約 2 桁の幅で描かれる（Issue #13・#15）: 升は偶数桁（大きな盤 6・縮小版 4）で、字形は升の中央の 2 桁の左、
+    /// 右隣のセルは升の背景の空白（暗い帯を出さない）、直前の手の括弧はその両隣で升の中に収まる。
     @Test(arguments: [(true, 6), (false, 4)])
     func symbolsSitInTheMiddleTwoCellsOfEvenSquares(large: Bool, width: Int) throws {
         var generator = SplitMix64(seed: 3)
@@ -31,7 +31,8 @@ struct TableRendererTests {
         let left = 3 + move.to.file * width
         let row = large ? 2 + (7 - move.to.rank) * 3 + 1 : 2 + (7 - move.to.rank)
         let start = left + width / 2 - 1
-        #expect(!grid[start, row].isWideTail && grid[start + 1, row].isWideTail)
+        #expect(grid[start, row].character != " ")
+        #expect(grid[start + 1, row].character == " " && grid[start + 1, row].background == grid[left, row].background)
         #expect(start - left == (left + width - 1) - (start + 1), "字形の左右の余白が同じ")
         #expect(grid[start - 1, row].character == "[" && grid[start + 2, row].character == "]")
         #expect(start - 1 >= left && start + 2 < left + width)

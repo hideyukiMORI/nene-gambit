@@ -50,11 +50,8 @@ struct BoardFrame: Sendable {
             let color = CellColors(
                 foreground: piece.color == .white ? theme.whitePiece : theme.blackPiece, background: background)
             let glyph = options.glyphs.glyph(for: piece.kind)
-            if wide {
-                grid.writeWide(glyph, column: center, row: middle, colors: color)
-            } else {
-                grid.write(String(glyph), column: center, row: middle, colors: color)
-            }
+            // 右隣のセルは升を塗ったときの空白のまま（升の色）。駒記号の字形はその上まではみ出して描かれる
+            grid.write(String(glyph), column: center, row: middle, colors: color)
         }
         // 2 桁の駒記号なら右の括弧を 1 桁右へ。升に収まらないときは括弧を描かない
         let closing = center + (wide ? 2 : 1)

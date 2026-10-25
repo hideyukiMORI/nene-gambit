@@ -72,10 +72,10 @@ struct TerminalTests {
         #expect(Palette256.nearest(Rgb(red: 128, green: 128, blue: 128)) == 244)
     }
 
-    /// 駒記号の右半分には何も書かず、端末が駒記号でカーソルを 1 進めても 2 進めても、ほかの文字は格子どおりの桁に書かれる。
-    /// 書いたバイト列を、その 2 種類の端末として再生して確かめる（Windows Terminal は 1 と答えて約 2 桁で描く・Issue #13）。
+    /// 端末が駒記号でカーソルを 1 進めても 2 進めても、すべてのセル（駒記号の右隣の空白を含む）が格子どおりの桁に書かれる。
+    /// 書いたバイト列を、その 2 種類の端末として再生して確かめる（Windows Terminal は 1 と答えて約 2 桁で描く・Issue #13・#15）。
     @Test(arguments: [1, 2])
-    func symbolTailsAreSkippedWhateverTheTerminalAdvances(advance: Int) {
+    func everyCellLandsWhateverTheTerminalAdvances(advance: Int) {
         let grid = Self.grid(.symbols)
         let symbols: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{265F}"]
         var screen: [[Int]: Character] = [:]
@@ -100,9 +100,7 @@ struct TerminalTests {
         var mismatches = 0
         for row in 0..<grid.size.rows {
             for column in 0..<grid.size.columns {
-                let cell = grid[column, row]
-                let written = screen[[row, column]]
-                if cell.isWideTail ? written != nil : written != cell.character {
+                if screen[[row, column]] != grid[column, row].character {
                     mismatches += 1
                 }
             }

@@ -14,8 +14,7 @@ public enum FrameEncoder {
         for row in 0..<grid.size.rows {
             for column in 0..<grid.size.columns {
                 let cell = grid[column, row]
-                // 2 桁の文字の右半分には書かない（書くと左半分の文字を消す）
-                if cell.isWideTail || (!full && previous?[column, row] == cell) {
+                if !full, previous?[column, row] == cell {
                     continue
                 }
                 let position = row * grid.size.columns + column
@@ -27,10 +26,10 @@ public enum FrameEncoder {
                     styled = cell
                 }
                 out += Array(String(cell.character).utf8)
-                // 2 桁ぶんの字形の後は、端末がカーソルを 1 進めるか 2 進めるかが端末とフォントで違う（Issue #13）。
+                // 駒記号の後は、端末がカーソルを 1 進めるか 2 進めるかが端末とフォントで違う（Issue #13・#15）。
                 // 位置を当てにせず、次に書くセルでカーソルを明示的に動かす
-                let followedByTail = column + 1 < grid.size.columns && grid[column + 1, row].isWideTail
-                cursor = followedByTail || column + 1 >= grid.size.columns ? nil : position + 1
+                let uncertain = Self.chessSymbols.contains(cell.character)
+                cursor = uncertain || column + 1 >= grid.size.columns ? nil : position + 1
             }
         }
         if !out.isEmpty {
@@ -38,6 +37,10 @@ public enum FrameEncoder {
         }
         return out
     }
+
+    /// 幅が端末とフォントで変わる文字（Unicode の駒記号）。
+    private static let chessSymbols: Set<Character> = Set(
+        (0x2654...0x265F).compactMap { Unicode.Scalar($0).map(Character.init) })
 
     private static func sgr(_ foreground: Rgb, _ background: Rgb, _ colors: ColorMode) -> [UInt8] {
         switch colors {
