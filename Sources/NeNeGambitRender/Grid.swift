@@ -25,17 +25,6 @@ public struct Grid: Sendable, Hashable {
         }
     }
 
-    /// 端末が 2 桁で描く文字を書く。右隣のセルは何も書かない「右半分」にする（格子の外にはみ出すなら書かない）。
-    mutating func writeWide(_ character: Character, column: Int, row: Int, colors: CellColors) {
-        guard (0..<size.rows).contains(row), (0..<(size.columns - 1)).contains(column) else {
-            return
-        }
-        cells[row * size.columns + column] = Cell(
-            character: character, foreground: colors.foreground, background: colors.background)
-        cells[row * size.columns + column + 1] = Cell(
-            character: " ", foreground: colors.foreground, background: colors.background, isWideTail: true)
-    }
-
     /// 色の付いた切れを左から続けて書き、書いた桁数を返す。
     @discardableResult
     mutating func write(_ segments: [Segment], column: Int, row: Int, background: Rgb) -> Int {
