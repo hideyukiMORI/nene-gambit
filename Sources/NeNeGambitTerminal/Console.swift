@@ -79,6 +79,18 @@ public enum Console {
         return count > 0 ? Array(buffer.prefix(count)) : []
     }
 
+    /// 文字列を行頭に書いたときにカーソルが何桁進むかを端末に問い合わせる（カーソル位置の報告 `ESC [ 6 n`）。
+    /// 罫線の文字が 1 桁で描かれるかを確かめるために使う（ADR 0007）。0.3 秒以内に答えが無ければ nil。
+    public static func columnsAdvanced(by text: String) -> Int? {
+        write(Array(("\r" + text + "\u{1B}[6n").utf8))
+        var reply: [UInt8] = []
+        for _ in 0..<3 where !reply.contains(UInt8(ascii: "R")) {
+            reply += waitForInput(milliseconds: 100)
+        }
+        write(Array(("\r" + String(repeating: " ", count: text.count * 2) + "\r").utf8))
+        return CursorReport.column(in: reply).map { $0 - 1 }
+    }
+
     /// 前回から届いたシグナルを取り出す（取り出すと消える）。
     public static func takeSignals() -> ConsoleSignals {
         let bits = pendingSignals.exchange(0, ordering: .acquiringAndReleasing)

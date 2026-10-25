@@ -24,4 +24,17 @@ public struct Grid: Sendable, Hashable {
                 character: character, foreground: colors.foreground, background: colors.background)
         }
     }
+
+    /// 色の付いた切れを左から続けて書き、書いた桁数を返す。
+    @discardableResult
+    mutating func write(_ segments: [Segment], column: Int, row: Int, background: Rgb) -> Int {
+        var offset = 0
+        for segment in segments {
+            write(
+                segment.text, column: column + offset, row: row,
+                colors: CellColors(foreground: segment.color, background: background))
+            offset += segment.text.count
+        }
+        return offset
+    }
 }

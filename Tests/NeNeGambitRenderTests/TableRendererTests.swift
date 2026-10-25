@@ -3,56 +3,145 @@ import NeNeGambitEngine
 import NeNeGambitRender
 import Testing
 
-/// 画面の格子（FR-01・FR-07・FR-10）と棋譜の表記。
+/// 画面の格子（FR-01・FR-07・FR-10・FR-13〜15）と棋譜の表記。
 struct TableRendererTests {
-    static let series = GameSeries.starting(Players(white: .random, black: .random))
+    static func series(seed: UInt64 = 1) -> GameSeries {
+        var generator = SplitMix64(seed: seed)
+        return GameSeries.starting(using: &generator)
+    }
+
+    static func state(
+        _ series: GameSeries, glyphs: GlyphSet = .letters, theme: Theme = .standard, frame: FrameStyle = .boxDrawing
+    ) -> ScreenState {
+        let options = DisplayOptions(glyphs: glyphs, theme: theme, frame: frame, colors: .trueColor)
+        return ScreenState(series: series, options: options, seed: 42, countdown: nil)
+    }
 
     /// 格子の 1 行を文字列として読む。
     static func line(_ grid: Grid, _ row: Int) -> String {
         String((0..<grid.size.columns).map { grid[$0, row].character })
     }
 
-    @Test func boardHasRankEightOnTopAndLettersByDefault() {
-        let grid = TableRenderer.render(Self.series, glyphs: .letters, size: TableRenderer.minimumSize)
-        #expect(Self.line(grid, 1).hasPrefix("  8  R  N  B  Q  K  B  N  R "))
-        #expect(Self.line(grid, 8).hasPrefix("  1  R  N  B  Q  K  B  N  R "))
-        #expect(Self.line(grid, 9).hasPrefix("     a  b  c  d  e  f  g  h"))
+    static func text(_ grid: Grid) -> String {
+        (0..<grid.size.rows).map { line(grid, $0) }.joined(separator: "\n")
     }
 
-    @Test func whiteAndBlackDifferOnlyByColor() {
-        let grid = TableRenderer.render(Self.series, glyphs: .letters, size: TableRenderer.minimumSize)
-        let blackKing = grid[4 + 4 * 3 + 1, 1]
-        let whiteKing = grid[4 + 4 * 3 + 1, 8]
-        #expect(blackKing.character == whiteKing.character)
-        #expect(blackKing.foreground != whiteKing.foreground)
+    @Test func largeBoardHasRankEightOnTopWithSevenColumnSquares() {
+        let grid = TableRenderer.render(Self.state(Self.series()), size: TableRenderer.largeSize)
+        let rank8 = Array(Self.line(grid, 3))
+        let rank1 = Array(Self.line(grid, 24))
+        #expect(rank8[1] == "8" && rank1[1] == "1")
+        #expect(String((0..<8).map { rank8[6 + $0 * 7] }) == "RNBQKBNR")
+        #expect(String((0..<8).map { rank1[6 + $0 * 7] }) == "RNBQKBNR")
+        #expect(grid[6, 3].foreground != grid[6, 24].foreground)
+    }
+
+    @Test func headerAndKeyHelpAreAlwaysShown() {
+        let grid = TableRenderer.render(Self.state(Self.series()), size: TableRenderer.largeSize)
+        let header = Self.line(grid, 0)
+        let footer = Self.line(grid, 29)
+        #expect(header.contains("NENE//GAMBIT") && header.contains("GAME 001"))
+        #expect(header.contains("SEED 0x000000000000002A"))
+        #expect(footer.contains("[q] QUIT") && footer.contains("[g] GLYPHS: LETTERS"))
+        #expect(footer.contains("[t] THEME: NEON"))
+    }
+
+    @Test func hudShowsTheCastAndPanels() {
+        let series = Self.series()
+        let text = Self.text(TableRenderer.render(Self.state(series), size: TableRenderer.largeSize))
+        #expect(text.contains("┌─[ MATCH ]") && text.contains("├─[ SCORE ]") && text.contains("├─[ LOG ]"))
+        #expect(text.contains("WHITE     " + series.players.white.handle))
+        #expect(text.contains("BLACK     " + series.players.black.handle))
+        #expect(text.contains(series.banter.lines[0].text) && text.contains(series.banter.lines[1].text))
+    }
+
+    /// HUD のどの行も 37 桁ちょうどで、両端が枠になる。
+    @Test func hudRowsAreExactlyThePanelWidth() {
+        let grid = TableRenderer.render(Self.state(Self.series()), size: TableRenderer.largeSize)
+        for row in 2..<26 {
+            let line = Array(Self.line(grid, row))
+            #expect("┌│├└".contains(line[61]), "行 \(row) の左端")
+            #expect("┐│┤┘".contains(line[97]), "行 \(row) の右端")
+        }
+    }
+
+    @Test func asciiFrameUsesOnlyAscii() {
+        let grid = TableRenderer.render(Self.state(Self.series(), frame: .ascii), size: TableRenderer.largeSize)
+        let text = Self.text(grid)
+        #expect(text.unicodeScalars.allSatisfy { $0.value < 0x80 })
+        #expect(text.contains("+-[ MATCH ]"))
+    }
+
+    @Test func compactLayoutFitsTheMinimum() {
+        let grid = TableRenderer.render(Self.state(Self.series()), size: TableRenderer.minimumSize)
+        let rank8 = Array(Self.line(grid, 2))
+        #expect(rank8[1] == "8")
+        #expect(String((0..<8).map { rank8[4 + $0 * 3] }) == "RNBQKBNR")
+        #expect(Self.line(grid, 2).contains("MATCH 001"))
+        #expect(Self.line(grid, 14).contains("[q] QUIT"))
     }
 
     @Test func symbolsReplaceLetters() {
-        let grid = TableRenderer.render(Self.series, glyphs: .symbols, size: TableRenderer.minimumSize)
-        #expect(grid[4 + 4 * 3 + 1, 8].character == "\u{265A}")
+        let grid = TableRenderer.render(Self.state(Self.series(), glyphs: .symbols), size: TableRenderer.largeSize)
+        #expect(grid[6 + 4 * 7, 24].character == "\u{265A}")
         #expect(GlyphSet.letters.toggled == .symbols)
-        #expect(GlyphSet.symbols.toggled == .letters)
     }
 
-    @Test func hudShowsGameTallyTurnAndPlayers() {
-        let grid = TableRenderer.render(Self.series, glyphs: .letters, size: TableRenderer.minimumSize)
-        let hud = (1...7).map { Self.line(grid, $0) }.joined(separator: "\n")
-        #expect(hud.contains("Game 1"))
-        #expect(hud.contains("White 0  Black 0  Draws 0"))
-        #expect(hud.contains("White to move, move 1"))
-        #expect(hud.contains("White: Random  Black: Random"))
+    @Test func lastMoveIsBracketed() throws {
+        var generator = SplitMix64(seed: 3)
+        let series = GameSeries.starting(using: &generator).advanced(using: &generator)
+        let move = try #require(series.game.moves.last)
+        let grid = TableRenderer.render(Self.state(series), size: TableRenderer.largeSize)
+        let column = 3 + move.to.file * 7 + 3
+        let row = 2 + (7 - move.to.rank) * 3 + 1
+        #expect(grid[column - 1, row].character == "[" && grid[column + 1, row].character == "]")
     }
 
     @Test func tooSmallScreenShowsOneLine() {
-        let size = ScreenSize(columns: 40, rows: 10)
-        let grid = TableRenderer.render(Self.series, glyphs: .letters, size: size)
-        #expect(Self.line(grid, 0).hasPrefix("Terminal too small (need 67x15)"))
+        let grid = TableRenderer.render(Self.state(Self.series()), size: ScreenSize(columns: 40, rows: 10))
+        #expect(Self.line(grid, 0).hasPrefix("TERMINAL TOO SMALL (NEED 67x15)"))
         #expect(Self.line(grid, 1).allSatisfy { $0 == " " })
     }
 
     @Test func zeroSizeDoesNotCrash() {
-        let grid = TableRenderer.render(Self.series, glyphs: .letters, size: ScreenSize(columns: 0, rows: -3))
+        let grid = TableRenderer.render(Self.state(Self.series()), size: ScreenSize(columns: 0, rows: -3))
         #expect(grid.size == ScreenSize(columns: 0, rows: 0))
+    }
+
+    @Test func themesCycleThroughTwelve() {
+        #expect(Theme.catalog.count == 12)
+        #expect(Set(Theme.catalog.map(\.name)).count == 12)
+        var theme = Theme.standard
+        for _ in 0..<12 {
+            theme = theme.next
+        }
+        #expect(theme == Theme.standard)
+        #expect(Theme.named("amber")?.name == "AMBER")
+        #expect(Theme.named("plaid") == nil)
+    }
+
+    /// どのテーマでも、文字（英数字）は背景に対して 4.5:1 以上、白黒の駒は明るさで 2.2:1 以上離れる。
+    @Test(arguments: Theme.catalog.map(\.name))
+    func everyThemeIsReadable(name: String) throws {
+        let theme = try #require(Theme.named(name))
+        var generator = SplitMix64(seed: 8)
+        var series = GameSeries.starting(using: &generator)
+        for _ in 0..<30 {
+            series = series.advanced(using: &generator)
+        }
+        let grid = TableRenderer.render(Self.state(series, theme: theme), size: TableRenderer.largeSize)
+        for row in 0..<grid.size.rows {
+            for column in 0..<grid.size.columns {
+                let cell = grid[column, row]
+                guard cell.character.isLetter || cell.character.isNumber else {
+                    continue
+                }
+                let ratio = Contrast.ratio(cell.foreground, cell.background)
+                #expect(ratio >= 4.5, "\(name) \(column),\(row) '\(cell.character)' \(ratio)")
+            }
+        }
+        let start = TableRenderer.render(Self.state(Self.series(), theme: theme), size: TableRenderer.largeSize)
+        #expect(Contrast.ratio(start[6, 24].foreground, start[6, 3].foreground) >= 2.2, "\(name) 白黒の駒")
     }
 
     /// SAN の表記（キャスリング・アンパッサン・昇格・王手・メイト・曖昧さの解消）。
@@ -76,22 +165,15 @@ struct TableRendererTests {
         #expect(MoveNotation.san(move, in: position) == expected)
     }
 
-    /// 棋譜の行は「手数. 白 黒」で、最後の 4 行だけを出す。
-    @Test func recentMovesShowNumberedPairs() throws {
+    /// 棋譜の行は「手数. 白 黒」で、手番の側にカーソルを置く。
+    @Test func moveLogShowsNumberedPairsAndCursor() {
         var generator = SplitMix64(seed: 5)
-        var series = Self.series
+        var series = GameSeries.starting(using: &generator)
         for _ in 0..<12 {
             series = series.advanced(using: &generator)
         }
-        let grid = TableRenderer.render(series, glyphs: .letters, size: TableRenderer.minimumSize)
-        let lines = (8...11).map { Self.line(grid, $0).dropFirst(33).prefix(34).trimmingCharacters() }
-        #expect(lines.map { $0.split(separator: " ").first.map(String.init) } == ["3.", "4.", "5.", "6."])
-    }
-}
-
-extension Substring {
-    /// 末尾の空白を落とす（Foundation を使わない）。
-    func trimmingCharacters() -> String {
-        String(self.reversed().drop { $0 == " " }.reversed())
+        let text = Self.text(TableRenderer.render(Self.state(series), size: TableRenderer.largeSize))
+        #expect(text.contains("│ 01.  ") && text.contains("│ 06.  "))
+        #expect(text.contains("│ 07.  ▌"))
     }
 }
