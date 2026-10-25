@@ -5,6 +5,18 @@ extension Position {
         pseudoLegalMoves().filter { !applying($0).isKingAttacked(sideToMove) }
     }
 
+    /// 手番の側の、駒を取る合法手（アンパッサンと、取りながらの昇格を含む）。
+    ///
+    /// 探索の静止探索が使う。全部の合法手を作ってから絞るより、適用して王手を確かめる手が少ない分だけ速い。
+    public func legalCaptures() -> [Move] {
+        pseudoLegalMoves().filter { move in
+            let isCapture =
+                board[move.to] != nil
+                || (board[move.from]?.kind == .pawn && move.from.file != move.to.file)
+            return isCapture && !applying(move).isKingAttacked(sideToMove)
+        }
+    }
+
     /// 駒の動き方の上では指せる手（自分の王が王手に晒されるかはまだ見ていない）。
     private func pseudoLegalMoves() -> [Move] {
         var moves: [Move] = []
