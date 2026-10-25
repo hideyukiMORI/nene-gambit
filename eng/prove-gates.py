@@ -261,6 +261,17 @@ PROOFS: list[Proof] = [
           core_file("Probe.swift", "/// 証明用。\nenum Probe {\n    /// 証明用。\n    static func code(_ name: String) -> Int {\n"
                     "        switch name {\n        case \"a\":\n            return 1\n        case _ where true:\n            return 0\n        }\n    }\n}\n"),
           r"error: switch must be exhaustive"),
+    Proof("P51", ["QLT-014"], "公開スクリプトに版と違うタグを渡す",
+          nothing, r"package-release: タグ v9\.9\.9 が版 v[0-9.]+ と違う", command=["eng/package-release.sh", "v9.9.9"]),
+    Proof("P52", ["QLT-014"], "公開スクリプトから --static-swift-stdlib を外す（Swift のランタイムに動的に依存する実行ファイルになる）",
+          lambda r: edit(r, "eng/package-release.sh", " --static-swift-stdlib", ""),
+          r"package-release: 宣言していない動的依存: libswift", command=["eng/package-release.sh"]),
+    Proof("P53", ["QLT-014"], "公開スクリプトの同梱物に余計なファイルを 1 つ足す",
+          lambda r: edit(r, "eng/package-release.sh", 'cp LICENSE "$stage/LICENSE"', 'cp LICENSE "$stage/LICENSE"\ntouch "$stage/notes.txt"'),
+          r"package-release: 同梱物が固定の 3 つと違う", command=["eng/package-release.sh"]),
+    Proof("P54", ["QLT-014"], "--version の出力を版の入力と違う値にする",
+          lambda r: edit(r, "Sources/nene-gambit/main.swift", 'print("nene-gambit \\(Version.current)")', 'print("nene-gambit 0.0.0")'),
+          r"package-release: --version が 'nene-gambit 0\.0\.0'", command=["eng/package-release.sh"]),
     Proof("P37", ["QLT-001"], ".swift-version を実際の版と違う 6.4.0 にする",
           lambda r: write(r, ".swift-version", "6.4.0\n"), r"tools: swift は 6\.4\.0 が要る"),
     Proof("P38", ["QLT-007"], "規約検査の CNF-013 の検出を壊す（検査器の単体テストが落ちること）",
@@ -343,7 +354,7 @@ UNDEFINED_ID_SHOWN = "ARC-0 99（仕込んだ未定義の ID。この文書自�
 
 def copy_tree(dest: Path) -> None:
     def ignore(directory: str, names: list[str]) -> set[str]:
-        return {n for n in names if Path(directory) == ROOT and n in (".build", ".tools", ".handoff", ".swiftpm")} | {
+        return {n for n in names if Path(directory) == ROOT and n in (".build", ".tools", ".handoff", ".swiftpm", ".release")} | {
             n for n in names if n == "__pycache__"}
 
     shutil.copytree(ROOT, dest, ignore=ignore, symlinks=True)

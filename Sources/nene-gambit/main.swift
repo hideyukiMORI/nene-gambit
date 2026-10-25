@@ -6,8 +6,14 @@ import NeNeGambitEngine
 import NeNeGambitRender
 import NeNeGambitTerminal
 
+let arguments = Array(CommandLine.arguments.dropFirst())
+if arguments == ["--version"] {
+    print("nene-gambit \(Version.current)")
+    exit(0)
+}
+
 let options: LaunchOptions
-switch LaunchOptions.parse(Array(CommandLine.arguments.dropFirst())) {
+switch LaunchOptions.parse(arguments) {
 case .parsed(let parsed):
     options = parsed
 case .rejected(let reason):
