@@ -146,14 +146,25 @@ Waivers: none | WVR-NNNN
 
 ## 9. リリース
 
-**未実測（Phase 4 で決める）。** いま決まっているのは次の枠だけである。
+製品の版入力は **`Sources/nene-gambit/Version.swift` の `Version.current`** だけとする。`--version` の出力・配布物名はそこから導出し、
+2 か所目に手で書かない（ADR 0012）。配布物の正規生成経路は次の 1 本である。
 
-- 製品の版の入力は 1 か所だけにする。SwiftPM の manifest には製品の版の欄が無いので、その 1 か所をどこに置くかを Phase 4 の ADR で決める。
-  `--version` の出力・配布物名はビルドがそこから導出し、2 か所目に手で書かない
-- 配布物は 1 本の公開スクリプトで作る。単一ゲートとは別のビルドディレクトリで release 構成を clean build し、規約検査とテストを通し、
-  成果物（Linux x86_64 の実行ファイル・宣言外の動的依存が無いこと・埋め込み版の一致・同梱一覧の完全一致）を検査してから `SHA256SUMS` を作る。
-  **この検査は PR 最終 HEAD で行うフルゲートの代わりではない**
-- 公開は squash 統合後の clean な `main` から同じスクリプトで作り直し、短い実機起動を確認してから `v<version>` の tag と同名 Release に添付し、
-  再ダウンロードして照合する。署名・インストーラ・自動更新は別の焦点 Issue とする
+```bash
+make release TAG=v<版>          # = eng/package-release.sh v<版>
+```
 
-公開スクリプトのコマンド・出力先・同梱一覧は、スクリプトを書いてから本節に書く。
+このコマンドは固定した toolchain で **単一ゲートとは別のビルドディレクトリ（`.release/build`）** に、規約検査と release 構成のテストを通し、
+標準ライブラリを静的にリンクしてビルドする。成果物を検査（x86-64 の ELF・宣言外の動的依存が無いこと・`--version` とタグが版と一致・
+同梱物の完全一致）してから `.release/out/` へ `nene-gambit-<版>-linux-x86_64.tar.gz` と `SHA256SUMS` を作る。
+配布物の直下は **`nene-gambit`・`README.txt`・`LICENSE`** だけとする（QLT-014）。
+**この検査は PR 最終 HEAD で行うフルゲートの代わりではない。**
+
+公開の手順（施主の確認を取ってから）:
+
+1. 版を上げる PR を squash で統合し、clean な `main` を取る
+2. `make release TAG=v<版>` で作り直し、展開した実行ファイルで `--version` と短い起動を確かめる
+3. `gh release create v<版> .release/out/*.tar.gz .release/out/SHA256SUMS --target main` で、同名のタグと Release を作る。
+   本文に「必須 CI が成功した PR」「確認した項目」「対象の SHA」を書く
+4. 公開後に Release から再ダウンロードして `sha256sum --check SHA256SUMS` で照合する
+
+署名・インストーラ・自動更新は別の焦点 Issue とする。

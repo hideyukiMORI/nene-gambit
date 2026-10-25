@@ -5,7 +5,7 @@
 BASE ?= origin/main
 SWIFTLINT := .tools/swiftlint
 
-.PHONY: check bootstrap tools build test smoke format lint conformance conformance-test commits
+.PHONY: check bootstrap tools build test smoke format lint conformance conformance-test commits release
 
 check: tools build format lint conformance conformance-test test smoke commits
 	@echo "make check: 緑"
@@ -42,3 +42,7 @@ conformance-test:
 
 commits:
 	python3 eng/validate-commit-message.py --range "$(BASE)..HEAD"
+
+# 配布物を作る（完了の定義ではない。公開の手順は docs/DEVELOPMENT_WORKFLOW.md 第 9 節）
+release:
+	eng/package-release.sh $(TAG)

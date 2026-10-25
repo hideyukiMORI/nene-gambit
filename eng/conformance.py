@@ -443,7 +443,7 @@ GATE_WEAKENERS = (
     "|| " + "true",
     "set " + "+e",
 )
-IGNORABLE = {".build/", ".tools/", ".swiftpm/", "__pycache__/"}
+IGNORABLE = {".build/", ".tools/", ".swiftpm/", ".release/", "__pycache__/"}
 LINT_FORBIDDEN_KEYS = ("excluded", "included", "disabled_rules", "opt_in_rules", BASE_WORD, "warning_threshold")
 
 
