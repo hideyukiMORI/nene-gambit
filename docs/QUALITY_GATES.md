@@ -97,10 +97,13 @@ CI で必要なゲートは、すべてローカルで実行できる。検査�
 ### QLT-012 — 検証の頻度は変更に従う
 
 反復中は最も狭い検査を使う。**フルゲートは PR の Draft → Ready の時点で必ず通す。**
-CI の起動条件は `ready_for_review`（＋非 draft の `synchronize` / `edited` / `opened` / `reopened`）で、draft の間はジョブを飛ばす。
-head が動いたら Draft に戻して再度 Ready にする。古い成功 SHA・スキップされたジョブ・狭い検査は、通ったフルゲートの代わりにならない。
+CI の起動条件は `ready_for_review`・`synchronize`・`edited`・`opened`・`reopened` で、**draft の間はジョブを失敗させる**（`eng/ci-require-ready.sh`）。
+🔴 ジョブを `if:` で**スキップしてはならない**。GitHub はスキップされた必須 check を成功として数える。PR #2 で、Ready にした直後に push の反映より先に
+`ready_for_review` が届いて古い head で CI が走り、新しい head には draft 時のスキップだけが付いて、フルゲートを通っていない head が `CLEAN`（マージ可能）になった。
+Ready の後の push は `synchronize` でフルゲートが回る。必須 check は head の SHA ごとに付き、ruleset の strict up-to-date が古い base を拒むので、
+古い成功 SHA・スキップされたジョブ・狭い検査は、通ったフルゲートの代わりにならない。
 
-- 機械強制: **planned**（CI の起動条件と ruleset の strict up-to-date が補助する。Draft に戻す手順は人が守る）
+- 機械強制: **planned** → CNF-018（`if:` の禁止）＋`eng/ci-require-ready.sh`（draft なら失敗）＋ruleset の必須 check と strict up-to-date
 
 ### QLT-013 — 環境依存の主張は正直に名付ける
 
@@ -136,7 +139,7 @@ head が動いたら Draft に戻して再度 Ready にする。古い成功 SHA
 | `CNF-015` | `Codable` / `Decodable` / `Encodable` の禁止 | SWF-007 | active |
 | `CNF-016` | 公開の格納 `var` と `open` の禁止 | SWF-003 | active |
 | `CNF-017` | 合成ルート以外で `print` / `readLine` / `exit` / `FileHandle` 等を使わない | ARC-006 | active |
-| `CNF-018` | CI はツールチェーンの導入と `make check` の 1 行だけを呼ぶ・アクションは commit SHA で固定・token は `contents: read` | QLT-001 | active |
+| `CNF-018` | CI はツールチェーンの導入と `make check` の 1 行（と draft なら失敗する 1 行）だけを呼ぶ・`if:` を書かない・アクションは commit SHA で固定・token は `contents: read` | QLT-001 | active |
 | `CNF-019` | 製品コード（`Sources/`）で `throws` / `throw` / `try` / `catch` を使わない | SWF-005 | active |
 | `CNF-020` | `Any` / `AnyObject` / `AnyHashable` / `AnyClass` の禁止 | SWF-006 | active |
 

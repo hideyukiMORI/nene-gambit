@@ -441,6 +441,7 @@ WORKFLOW = textwrap.dedent("""\
         runs-on: ubuntu-22.04
         steps:
           - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+          - run: eng/ci-require-ready.sh ${{ github.event.pull_request.draft }}
           - run: eng/install-swift.sh
           - run: make check BASE=${{ github.event.pull_request.base.sha }}
     """)
@@ -457,6 +458,10 @@ class Cnf018(Base):
     def test_fires_on_extra_run(self) -> None:
         self.assertFires(c.cnf018, "CNF-018", ".github/workflows/ci.yml",
                          WORKFLOW + "      - run: swift build\n")
+
+    def test_fires_on_skip_condition(self) -> None:
+        self.assertFires(c.cnf018, "CNF-018", ".github/workflows/ci.yml",
+                         WORKFLOW.replace("    runs-on:", "    if: ${{ !github.event.pull_request.draft }}\n    runs-on:"))
 
     def test_fires_on_write_permission(self) -> None:
         self.assertFires(c.cnf018, "CNF-018", ".github/workflows/ci.yml",

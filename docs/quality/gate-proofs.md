@@ -164,6 +164,7 @@ Issue #1 の Phase 1〜2 で、証明の手順が次を見つけた。
 | P12 の初回: `[Int: Any]` の static 定数が Swift 6 の並行性で先にビルドエラーになった | `Any` を返す関数に変えて、CNF-020 で落ちることを取り直した |
 | P18 の初回: if 10 個の関数が通った。SwiftLint は分岐 10 個を複雑度 10 と数える（`+1` しない） | if を 11 個にして取り直した（`currently complexity is 11`）。CODING_RULES SWF-012 に数え方を書いた |
 | P31 の初回: 文書の置換が CNF 表の行（`| QLT-008 | planned |` を含む）にも当たった | マトリクスの行だけに当たる置換に直した |
+| 🔴 PR #2: push の直後に Ready にしたら、`ready_for_review` が push の反映より先に届いて古い head（b54cd58）で CI が走り、新しい head（d2d5adf）には draft 時の**スキップ**だけが付いた。GitHub はスキップされた必須 check を成功として数えるので、フルゲートを通っていない head が `CLEAN`（マージ可能）になった（2026-10-25 07:05 UTC・run 40171485758 / 40171486988） | すぐ Draft に戻した。ジョブの `if:` をやめ、draft なら**失敗する**最初の step（`eng/ci-require-ready.sh`）に替えた。CNF-018 が `if:` を拒否する（P45） |
 | P44 の初回: swift-format の `FileScopedDeclarationPrivacy` が SwiftLint の `private_over_fileprivate` と同じことを見ていた | SwiftLint 側を外して不採用表に理由を書いた（P-04: 同じ規則を 2 か所に置かない） |
 
 ---

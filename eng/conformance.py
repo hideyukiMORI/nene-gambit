@@ -797,7 +797,8 @@ def cnf018(ctx: Context) -> list[Violation]:
     workflows = [p for p in ctx.files() if str(p).startswith(".github/workflows/")]
     if not workflows:
         return [Violation("CNF-018", ".github/workflows", 1, "CI のワークフローが無い")]
-    allowed_runs = {"eng/install-swift.sh", "make check BASE=${{ github.event.pull_request.base.sha }}"}
+    allowed_runs = {"eng/ci-require-ready.sh ${{ github.event.pull_request.draft }}", "eng/install-swift.sh",
+                    "make check BASE=${{ github.event.pull_request.base.sha }}"}
     for rel in workflows:
         text = ctx.read(rel)
         s = str(rel)
@@ -809,6 +810,8 @@ def cnf018(ctx: Context) -> list[Violation]:
             uses = re.match(r"^\s*(?:-\s*)?uses:\s*(\S+)", line)
             if uses and not re.fullmatch(r"[\w.-]+/[\w./-]+@[0-9a-f]{40}", uses.group(1)):
                 found.append(Violation("CNF-018", s, no, f"アクションを commit SHA で固定していない: {uses.group(1)}"))
+            if re.match(r"^\s*(?:-\s*)?if:", line):
+                found.append(Violation("CNF-018", s, no, "if: は使えない（スキップされた必須 check は成功として数えられる）"))
             run = re.match(r"^\s*(?:-\s*)?run:\s*(.*)$", line)
             if run and run.group(1).strip() not in allowed_runs:
                 found.append(Violation("CNF-018", s, no, f"CI で許す run はツールチェーン導入とゲートの 1 行だけ: {run.group(1).strip()}"))
