@@ -1,6 +1,6 @@
 {
   "measured_on": "2026-10-25",
-  "head": "b54cd58",
+  "head": "e2989e6",
   "note": "verdict=pass は「意図した規則で落ちた」（対照は exit 0）。作業木の未コミットの変更も複製に含む。",
   "results": [
     {
@@ -18,10 +18,10 @@
       "tail": [
         "python3 -m unittest discover -s eng/tests -q",
         "python3 eng/validate-commit-message.py --range \"origin/main..HEAD\"",
-        "commits: 2 件・違反 0 件",
+        "commits: 3 件・違反 0 件",
         "make check: 緑",
         "----------------------------------------------------------------------",
-        "Ran 89 tests in 0.258s",
+        "Ran 89 tests in 0.367s",
         "",
         "OK"
       ]
@@ -41,10 +41,10 @@
       "tail": [
         "python3 -m unittest discover -s eng/tests -q",
         "python3 eng/validate-commit-message.py --range \"origin/main..HEAD\"",
-        "commits: 2 件・違反 0 件",
+        "commits: 3 件・違反 0 件",
         "make check: 緑",
         "----------------------------------------------------------------------",
-        "Ran 89 tests in 0.260s",
+        "Ran 89 tests in 0.284s",
         "",
         "OK"
       ]
@@ -70,7 +70,7 @@
         "2 | ",
         "3 | /// 証明用。",
         "Failed frontend command:",
-        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types Sources/NeNeGambitCore/Probe.swift Sources/NeNeGambitCore/Square.swift -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P01-od4r29fg -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P01-od4r29fg -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -emit-module-doc-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftdoc -emit-module-source-info-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftsourceinfo -emit-objc-header-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-Swift.h -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-primary-emit-module.dia -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-primary-emit-module.d -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftmodule",
+        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -emit-module -experimental-skip-non-inlinable-function-bodies-without-types Sources/NeNeGambitCore/Probe.swift Sources/NeNeGambitCore/Square.swift -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P01-y2vdwy83 -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P01-y2vdwy83 -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -emit-module-doc-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftdoc -emit-module-source-info-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftsourceinfo -emit-objc-header-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-Swift.h -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-primary-emit-module.dia -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore-primary-emit-module.d -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Modules/NeNeGambitCore.swiftmodule",
         "error: Build failed",
         "make: *** [Makefile:19: build] Error 1"
       ]
@@ -93,7 +93,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.35 secs)",
+        "Build complete! (4.48 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -121,7 +121,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (5.95 secs)",
+        "Build complete! (5.33 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -147,7 +147,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (3.97 secs)",
+        "Build complete! (4.10 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -173,7 +173,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.05 secs)",
+        "Build complete! (4.37 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -203,7 +203,7 @@
         "11 |     case .white:",
         "12 |         return 1",
         "Failed frontend command:",
-        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -c -primary-file Sources/NeNeGambitCore/Side.swift Sources/NeNeGambitCore/Square.swift -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.d -emit-const-values-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.swiftconstvalues -emit-reference-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.swiftdeps -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P06-u79sazv2 -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P06-u79sazv2 -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.o -index-unit-output-path /NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.o -index-store-path .build/out -index-system-modules",
+        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -c -primary-file Sources/NeNeGambitCore/Side.swift Sources/NeNeGambitCore/Square.swift -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.d -emit-const-values-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.swiftconstvalues -emit-reference-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.swiftdeps -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P06-jsd27lmf -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P06-jsd27lmf -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.o -index-unit-output-path /NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Side.o -index-store-path .build/out -index-system-modules",
         "error: Build failed",
         "make: *** [Makefile:19: build] Error 1"
       ]
@@ -225,7 +225,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.16 secs)",
+        "Build complete! (4.12 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -250,7 +250,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.09 secs)",
+        "Build complete! (4.19 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -276,7 +276,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.23 secs)",
+        "Build complete! (4.22 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -300,10 +300,10 @@
       ],
       "missing": [],
       "tail": [
-        "[79 / 88] NeNeGambitRender",
+        "[83 / 89] NeNeGambitEngine",
         "[87 / 90] NeNeGambitTerminal",
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.08 secs)",
+        "Build complete! (4.12 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "Sources/nene-gambit/main.swift:9:13: error: Force Unwrapping Violation: Force unwrapping should be avoided (force_unwrapping)",
@@ -327,7 +327,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.13 secs)",
+        "Build complete! (4.40 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -353,7 +353,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.17 secs)",
+        "Build complete! (4.09 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -377,10 +377,10 @@
       ],
       "missing": [],
       "tail": [
-        "[86 / 91] NeNeGambitRender",
+        "[82 / 89] nene-gambit-product",
         "[88 / 91] NeNeGambitTerminal",
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.16 secs)",
+        "Build complete! (4.27 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "Sources/NeNeGambitCore/Probe.swift:4:29: error: Large Tuple Violation: Tuples should have at most 2 members (large_tuple)",
@@ -404,7 +404,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.14 secs)",
+        "Build complete! (4.34 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -430,7 +430,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.31 secs)",
+        "Build complete! (3.81 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -456,7 +456,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.15 secs)",
+        "Build complete! (4.10 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -480,10 +480,10 @@
       ],
       "missing": [],
       "tail": [
-        "[82 / 89] nene-gambit-product",
+        "[85 / 90] nene-gambit-product",
         "[88 / 91] NeNeGambitTerminal",
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.05 secs)",
+        "Build complete! (4.50 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "Sources/NeNeGambitCore/Probe.swift:4:12: error: Function Parameter Count Violation: Function should have 4 parameters or less: it currently has 5 (function_parameter_count)",
@@ -505,10 +505,10 @@
       ],
       "missing": [],
       "tail": [
-        "[85 / 90] NeNeGambitRender",
+        "[84 / 90] NeNeGambitEngine",
         "[88 / 91] NeNeGambitTerminal",
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.13 secs)",
+        "Build complete! (4.39 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "Sources/NeNeGambitCore/Probe.swift:4:5: error: Cyclomatic Complexity Violation: Function should have complexity 10 or less; currently complexity is 11 (cyclomatic_complexity)",
@@ -532,7 +532,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.05 secs)",
+        "Build complete! (4.11 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -558,7 +558,7 @@
       ],
       "missing": [],
       "tail": [
-        "Build complete! (4.13 secs)",
+        "Build complete! (4.26 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -585,7 +585,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (3.99 secs)",
+        "Build complete! (4.59 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -611,7 +611,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.09 secs)",
+        "Build complete! (4.52 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -669,7 +669,7 @@
         "",
         "[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>",
         "Failed frontend command:",
-        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -c -primary-file Sources/NeNeGambitCore/Probe.swift Sources/NeNeGambitCore/Square.swift -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.d -emit-const-values-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.swiftconstvalues -emit-reference-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.swiftdeps -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P24-2a70edph -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P24-2a70edph -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.o -index-unit-output-path /NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.o -index-store-path .build/out -index-system-modules",
+        "/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-frontend -frontend -c -primary-file Sources/NeNeGambitCore/Probe.swift Sources/NeNeGambitCore/Square.swift -emit-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.d -emit-const-values-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.swiftconstvalues -emit-reference-dependencies-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.swiftdeps -serialize-diagnostics-path .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I .build/out/Products/Debug-linux-x86_64 -module-cache-path .build/out/ModuleCache.noindex -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\\=dwarf -dwarf-version\\=4 -warnings-as-errors -warnings-as-errors -swift-version 6 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-upcoming-feature ExistentialAny -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins/testing\\#/root/.local/share/swiftly/toolchains/6.4.1/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file .build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /tmp/gambit-proof-P24-l24g6l_5 -enable-anonymous-context-mangled-names -file-compilation-dir /tmp/gambit-proof-P24-l24g6l_5 -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\\=86400 -Xcc -fmodules-prune-after\\=345600 -Xcc -I.build/out/Products/Debug-linux-x86_64/include -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources-normal/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources/x86_64 -Xcc -I.build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\\=1 -no-auto-bridging-header-chaining -module-name NeNeGambitCore -package-name repo -const-gather-protocols-file .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/NeNeGambitCore_const_extract_protocols.json -in-process-plugin-server-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/lib/swift/host/plugins -plugin-path /root/.local/share/swiftly/toolchains/6.4.1/usr/local/lib/swift/host/plugins -parse-as-library -o .build/out/Intermediates.noindex/NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.o -index-unit-output-path /NeNeGambit.build/Debug-linux-x86_64/NeNeGambitCore-t.build/Objects-normal/x86_64/Probe.o -index-store-path .build/out -index-system-modules",
         "error: Build failed",
         "make: *** [Makefile:19: build] Error 1"
       ]
@@ -691,7 +691,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.21 secs)",
+        "Build complete! (4.00 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -717,7 +717,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.39 secs)",
+        "Build complete! (4.14 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -741,11 +741,11 @@
       ],
       "missing": [],
       "tail": [
-        "[80 / 89] NeNeGambitRender",
-        "[87 / 90] nene-gambit-product",
+        "[75 / 86] NeNeGambitCore",
+        "[83 / 90] NeNeGambitEngine",
         "[87 / 90] NeNeGambitTerminal",
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.64 secs)",
+        "Build complete! (3.81 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "Sources/NeNeGambitRender/Cell.swift:3:1: error: [Indentation] indent by 2 spaces",
         "make: *** [Makefile:22: format] Error 123"
@@ -795,7 +795,7 @@
       "tail": [
         "[87 / 90] NeNeGambitTerminal",
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.45 secs)",
+        "Build complete! (3.85 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "warning: Skipping enabled rule 'statement_position' because it requires SourceKit and SourceKit access is prohibited.",
@@ -819,7 +819,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.24 secs)",
+        "Build complete! (4.16 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -844,7 +844,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.04 secs)",
+        "Build complete! (3.94 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -869,7 +869,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (4.10 secs)",
+        "Build complete! (4.11 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -911,13 +911,13 @@
       "expected": "(FAILED|did NOT match)",
       "verdict": "pass",
       "evidence": [
-        "/tmp/tmp.8JOQ2EZdUL/swiftlint_linux_amd64.zip: FAILED",
+        "/tmp/tmp.xXeUhX7vXR/swiftlint_linux_amd64.zip: FAILED",
         "sha256sum: WARNING: 1 computed checksum did NOT match"
       ],
       "missing": [],
       "tail": [
         "eng/install-tools.sh",
-        "/tmp/tmp.8JOQ2EZdUL/swiftlint_linux_amd64.zip: FAILED",
+        "/tmp/tmp.xXeUhX7vXR/swiftlint_linux_amd64.zip: FAILED",
         "sha256sum: WARNING: 1 computed checksum did NOT match",
         "make: *** [Makefile:16: tools] Error 1"
       ]
@@ -940,7 +940,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (3.99 secs)",
+        "Build complete! (4.47 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -965,7 +965,7 @@
       "missing": [],
       "tail": [
         "[91 / 91] nene-gambit-product",
-        "Build complete! (3.98 secs)",
+        "Build complete! (4.46 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -1013,7 +1013,7 @@
         "AssertionError: 'CNF-013' not found in [] : CNF-013 が Sources/Core/Board.swift で発火しない",
         "",
         "----------------------------------------------------------------------",
-        "Ran 89 tests in 0.281s",
+        "Ran 89 tests in 0.252s",
         "",
         "FAILED (failures=1)",
         "make: *** [Makefile:31: conformance-test] Error 1"
@@ -1035,7 +1035,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.41 secs)",
+        "Build complete! (4.31 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -1061,7 +1061,7 @@
       "missing": [],
       "tail": [
         "[92 / 92] nene-gambit-product",
-        "Build complete! (4.46 secs)",
+        "Build complete! (4.15 secs)",
         "eng/swift-sources.sh | xargs -0 swift-format lint --strict --configuration .swift-format",
         "eng/lint.sh .tools/swiftlint --config .swiftlint.yml",
         "python3 eng/conformance.py",
@@ -1081,17 +1081,17 @@
       "expected": "GIT-003 [0-9a-f]{7}: 件名は",
       "verdict": "pass",
       "evidence": [
-        "GIT-003 7144829: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）"
+        "GIT-003 2c6ad65: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）"
       ],
       "missing": [],
       "tail": [
         "python3 eng/validate-commit-message.py --range \"origin/main..HEAD\"",
-        "commits: 3 件・違反 1 件",
+        "commits: 4 件・違反 1 件",
         "----------------------------------------------------------------------",
-        "Ran 89 tests in 0.251s",
+        "Ran 89 tests in 0.274s",
         "",
         "OK",
-        "GIT-003 7144829: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）",
+        "GIT-003 2c6ad65: 件名は `<type>(<scope>): <日本語の説明> (#<issue番号>)` の形（type は feat / fix / docs / refactor / test / build / ci / chore）",
         "make: *** [Makefile:34: commits] Error 1"
       ]
     },
