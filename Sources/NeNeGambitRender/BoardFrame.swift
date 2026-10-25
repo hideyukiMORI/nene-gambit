@@ -44,16 +44,23 @@ struct BoardFrame: Sendable {
         }
         let middle = top + squareHeight / 2
         let center = left + squareWidth / 2
+        let wide = options.glyphs == .symbols && options.traits.wideSymbols
         if let piece = look.piece {
-            let color = piece.color == .white ? theme.whitePiece : theme.blackPiece
-            grid.write(
-                String(options.glyphs.glyph(for: piece.kind)), column: center, row: middle,
-                colors: CellColors(foreground: color, background: background))
+            let color = CellColors(
+                foreground: piece.color == .white ? theme.whitePiece : theme.blackPiece, background: background)
+            let glyph = options.glyphs.glyph(for: piece.kind)
+            if wide {
+                grid.writeWide(glyph, column: center, row: middle, colors: color)
+            } else {
+                grid.write(String(glyph), column: center, row: middle, colors: color)
+            }
         }
-        if look.hot {
+        // 2 桁の駒記号なら右の括弧を 1 桁右へ。升に収まらない（縮小版）ときは括弧を描かない
+        let closing = center + (wide ? 2 : 1)
+        if look.hot, closing < left + squareWidth {
             let bracket = CellColors(foreground: theme.accent, background: background)
             grid.write("[", column: center - 1, row: middle, colors: bracket)
-            grid.write("]", column: center + 1, row: middle, colors: bracket)
+            grid.write("]", column: closing, row: middle, colors: bracket)
         }
     }
 

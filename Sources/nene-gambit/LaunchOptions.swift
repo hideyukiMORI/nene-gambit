@@ -8,13 +8,13 @@ struct LaunchOptions {
     let seed: UInt64?
     let glyphs: GlyphSet
     let theme: Theme
-    /// 1 手を指す間隔（FR-11 の初期値は 0.7 秒）。
+    /// 1 手を指す間隔（FR-11 の初期値は 1.0 秒。手順 3 で施主が「0.7 秒は少し早い」と見て変えた）。
     let moveInterval: Duration
     /// 終局後に結果を見せる時間（FR-11 の初期値は 3 秒）。
     let resultPause: Duration
 
     static let defaults = LaunchOptions(
-        seed: nil, glyphs: .letters, theme: .standard, moveInterval: .milliseconds(700), resultPause: .seconds(3))
+        seed: nil, glyphs: .letters, theme: .standard, moveInterval: .milliseconds(1000), resultPause: .seconds(3))
 
     /// 起動オプションを読む（プログラム名を除いた引数）。
     static func parse(_ arguments: [String]) -> LaunchParsing {

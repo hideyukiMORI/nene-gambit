@@ -23,3 +23,4 @@ ADR は「なぜそう決めたか」「何を却下したか」を書く。
 | [0005](0005-screen-layout-and-glyph-width.md) | 画面は 1 文字 1 桁の格子で、盤は 1 升 3 桁、HUD の文言は ASCII の英語 | 受理（一部を 0007 で置換） |
 | [0006](0006-terminal-loop-and-signals.md) | 並行は 1 本のループだけ、シグナルは原子的な旗、異常終了はハンドラが端末を戻す | 受理 |
 | [0007](0007-cyber-hud-themes-and-banter.md) | サイバー HUD: 罫線の枠（幅を測って落とす）・2 段の配置・12 テーマ・キャラクターの発言 | 受理（0005 の一部を置換） |
+| [0008](0008-windows-terminal-colors-and-wide-symbols.md) | Windows Terminal では 24 ビット色、256 色は最近傍、駒記号の幅は端末に測らせる | 受理 |

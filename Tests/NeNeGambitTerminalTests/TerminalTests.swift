@@ -8,8 +8,11 @@ struct TerminalTests {
         String(decoding: bytes, as: UTF8.self)
     }
 
-    static func grid(_ glyphs: GlyphSet, size: ScreenSize = TableRenderer.largeSize) -> Grid {
-        let options = DisplayOptions(glyphs: glyphs, theme: .standard, frame: .boxDrawing, colors: .trueColor)
+    static func grid(
+        _ glyphs: GlyphSet, size: ScreenSize = TableRenderer.largeSize, theme: Theme = .standard, wide: Bool = false
+    ) -> Grid {
+        let traits = TerminalTraits(frame: .boxDrawing, wideSymbols: wide, colors: .trueColor)
+        let options = DisplayOptions(glyphs: glyphs, theme: theme, traits: traits)
         let state = ScreenState(series: TableRendererFixture.series, options: options, seed: 1, countdown: nil)
         return TableRenderer.render(state, size: size)
     }
@@ -54,6 +57,54 @@ struct TerminalTests {
     @Test func palette256IsUsedWithoutTrueColor() {
         let text = Self.text(FrameEncoder.encode(Self.grid(.letters), previous: nil, colors: .palette256))
         #expect(text.contains("\u{1B}[38;5;") && !text.contains("38;2;"))
+    }
+
+    /// 256 色の近似: 各テーマの地（いちばん暗い色）は、どの成分も元の色から 40 以内に収まる（暗い色が明るい色へ飛ばない）。
+    @Test(arguments: Theme.catalog.map(\.name))
+    func paletteKeepsDarkGroundsDark(name: String) throws {
+        let ground = Self.grid(.letters, theme: try #require(Theme.named(name)))[0, 1].background
+        let mapped = Palette256.rgb(at: Palette256.nearest(ground))
+        let original = [Int(ground.red), Int(ground.green), Int(ground.blue)]
+        #expect(zip(mapped, original).allSatisfy { abs($0 - $1) <= 40 }, "\(name): \(original) -> \(mapped)")
+    }
+
+    @Test func paletteMapsExactColorsToThemselves() {
+        #expect(Palette256.nearest(Rgb(red: 0, green: 0, blue: 0)) == 16)
+        #expect(Palette256.nearest(Rgb(red: 255, green: 255, blue: 255)) == 231)
+        #expect(Palette256.nearest(Rgb(red: 128, green: 128, blue: 128)) == 244)
+    }
+
+    /// 2 桁の駒記号の右半分には何も書かない。書いたバイト列を「2 桁の文字はカーソルを 2 つ進める」端末として再生して確かめる。
+    @Test func wideGlyphTailsAreNeverOverwritten() {
+        let grid = Self.grid(.symbols, wide: true)
+        let wide: Set<Character> = ["\u{265A}", "\u{265B}", "\u{265C}", "\u{265D}", "\u{265E}", "\u{265F}"]
+        var tails: Set<[Int]> = []
+        var cursor = [0, 0]
+        var overwritten = 0
+        var characters = Array(Self.text(FrameEncoder.encode(grid, previous: nil, colors: .trueColor)))[...]
+        while let character = characters.popFirst() {
+            if character == "\u{1B}" {
+                var sequence = ""
+                while let next = characters.popFirst() {
+                    sequence.append(next)
+                    if next.isLetter { break }
+                }
+                if sequence.hasSuffix("H") {
+                    let parts = sequence.dropFirst().dropLast().split(separator: ";").compactMap { Int($0) }
+                    cursor = [parts[0] - 1, parts[1] - 1]
+                }
+                continue
+            }
+            if tails.contains(cursor) { overwritten += 1 }
+            if wide.contains(character) {
+                tails.insert([cursor[0], cursor[1] + 1])
+                cursor[1] += 2
+            } else {
+                cursor[1] += 1
+            }
+        }
+        #expect(tails.count == 32)
+        #expect(overwritten == 0)
     }
 
     @Test func resizedFrameIsRedrawnInFull() {

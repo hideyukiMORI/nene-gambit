@@ -50,11 +50,9 @@ struct Screensaver {
             case .quit:
                 return
             case .toggleGlyphs:
-                display = DisplayOptions(
-                    glyphs: display.glyphs.toggled, theme: display.theme, frame: display.frame, colors: display.colors)
+                display = DisplayOptions(glyphs: display.glyphs.toggled, theme: display.theme, traits: display.traits)
             case .cycleTheme:
-                display = DisplayOptions(
-                    glyphs: display.glyphs, theme: display.theme.next, frame: display.frame, colors: display.colors)
+                display = DisplayOptions(glyphs: display.glyphs, theme: display.theme.next, traits: display.traits)
             }
         }
     }
@@ -81,7 +79,7 @@ struct Screensaver {
     private mutating func draw(deadline: ContinuousClock.Instant) {
         let state = ScreenState(series: series, options: display, seed: seed, countdown: countdown(until: deadline))
         let grid = TableRenderer.render(state, size: Console.size())
-        Console.write(FrameEncoder.encode(grid, previous: previous, colors: display.colors))
+        Console.write(FrameEncoder.encode(grid, previous: previous, colors: display.traits.colors))
         previous = grid
     }
 
