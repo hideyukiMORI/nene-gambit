@@ -11,7 +11,7 @@ enum ScreenChrome {
             Segment(" " + glyphs.marker + Wording.title, theme.accent), divider,
             Segment(Wording.headerGame(state.series.gameNumber), theme.text), divider,
             Segment(Wording.seed(state.seed), theme.text), divider,
-            Segment(Wording.colors(state.options.colors), theme.dim),
+            Segment(Wording.colors(state.options.traits.colors), theme.dim),
         ]
     }
 

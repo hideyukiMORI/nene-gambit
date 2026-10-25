@@ -19,7 +19,7 @@ struct ScreenLayout: Sendable {
         commsRow: 12, footerRow: 14, isCompact: true)
 
     func draw(_ state: ScreenState, into grid: inout Grid) {
-        let glyphs = FrameGlyphs.of(state.options.frame)
+        let glyphs = FrameGlyphs.of(state.options.traits.frame)
         let theme = state.options.theme
         grid.write(
             String(repeating: " ", count: grid.size.columns), column: 0, row: 0,

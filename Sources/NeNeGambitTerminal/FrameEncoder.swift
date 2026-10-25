@@ -14,7 +14,8 @@ public enum FrameEncoder {
         for row in 0..<grid.size.rows {
             for column in 0..<grid.size.columns {
                 let cell = grid[column, row]
-                if !full, let previous, previous[column, row] == cell {
+                // 2 桁の文字の右半分には書かない（書くと左半分の文字を消す）
+                if cell.isWideTail || (!full && previous?[column, row] == cell) {
                     continue
                 }
                 let position = row * grid.size.columns + column
@@ -26,7 +27,8 @@ public enum FrameEncoder {
                     styled = cell
                 }
                 out += Array(String(cell.character).utf8)
-                cursor = column + 1 < grid.size.columns ? position + 1 : nil
+                let advance = column + 1 < grid.size.columns && grid[column + 1, row].isWideTail ? 2 : 1
+                cursor = column + advance < grid.size.columns ? position + advance : nil
             }
         }
         if !out.isEmpty {
@@ -42,13 +44,7 @@ public enum FrameEncoder {
             let bg = "48;2;\(background.red);\(background.green);\(background.blue)"
             return Array("\u{1B}[\(fg);\(bg)m".utf8)
         case .palette256:
-            return Array("\u{1B}[38;5;\(paletteIndex(foreground));48;5;\(paletteIndex(background))m".utf8)
+            return Array("\u{1B}[38;5;\(Palette256.nearest(foreground));48;5;\(Palette256.nearest(background))m".utf8)
         }
-    }
-
-    /// 256 色の 6×6×6 の色立方体のいちばん近い番号（16〜231）。
-    static func paletteIndex(_ color: Rgb) -> Int {
-        let level = { (value: UInt8) in (Int(value) * 5 + 127) / 255 }
-        return 16 + 36 * level(color.red) + 6 * level(color.green) + level(color.blue)
     }
 }

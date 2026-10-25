@@ -13,8 +13,25 @@ struct TableRendererTests {
     static func state(
         _ series: GameSeries, glyphs: GlyphSet = .letters, theme: Theme = .standard, frame: FrameStyle = .boxDrawing
     ) -> ScreenState {
-        let options = DisplayOptions(glyphs: glyphs, theme: theme, frame: frame, colors: .trueColor)
-        return ScreenState(series: series, options: options, seed: 42, countdown: nil)
+        let traits = TerminalTraits(frame: frame, wideSymbols: false, colors: .trueColor)
+        return ScreenState(
+            series: series, options: DisplayOptions(glyphs: glyphs, theme: theme, traits: traits), seed: 42,
+            countdown: nil)
+    }
+
+    /// 端末が駒記号を 2 桁で描くとき: 駒は升の中央の桁から 2 桁、右隣のセルは何も書かない右半分、右の括弧は 1 桁右。
+    @Test func wideSymbolsTakeTwoCellsAndShiftTheClosingBracket() throws {
+        var generator = SplitMix64(seed: 3)
+        let series = GameSeries.starting(using: &generator).advanced(using: &generator)
+        let move = try #require(series.game.moves.last)
+        let traits = TerminalTraits(frame: .boxDrawing, wideSymbols: true, colors: .trueColor)
+        let options = DisplayOptions(glyphs: .symbols, theme: .standard, traits: traits)
+        let grid = TableRenderer.render(
+            ScreenState(series: series, options: options, seed: 1, countdown: nil), size: TableRenderer.largeSize)
+        let center = 3 + move.to.file * 7 + 3
+        let row = 2 + (7 - move.to.rank) * 3 + 1
+        #expect(!grid[center, row].isWideTail && grid[center + 1, row].isWideTail)
+        #expect(grid[center - 1, row].character == "[" && grid[center + 2, row].character == "]")
     }
 
     /// 格子の 1 行を文字列として読む。

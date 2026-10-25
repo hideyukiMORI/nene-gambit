@@ -15,10 +15,10 @@ swift build -c release
 .build/release/nene-gambit --glyphs symbols      # 駒記号で始める（端末によっては幅がずれる）
 .build/release/nene-gambit --seed 42             # 同じシードなら同じ対局と同じ会話
 .build/release/nene-gambit --theme phosphor      # 12 テーマ: NEON PHOSPHOR AMBER SYNTHWAVE GLACIER BLOODMOON VAPOR MONO TOXIC GILDED ABYSS PAPER
-.build/release/nene-gambit --move-interval 0.3 --result-pause 5
+.build/release/nene-gambit --move-interval 0.5 --result-pause 5   # 既定は 1 手 1.0 秒・終局後 3 秒
 ```
 
-端末は 67×15 以上が要る（100×30 以上で大きな盤になる）。24 ビットの色は `COLORTERM=truecolor` のときだけ使い、それ以外は 256 色で描く。
+端末は 67×15 以上が要る（100×30 以上で大きな盤になる）。24 ビットの色は Windows Terminal（`WT_SESSION`）か `COLORTERM=truecolor` のときに使い、それ以外は 256 色で描く。
 罫線の文字が 2 桁で描かれる端末では、自動で ASCII の枠に切り替わる。
 
 ## 開発
