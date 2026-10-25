@@ -23,20 +23,6 @@ struct GameSeriesTests {
         #expect(first != other)
     }
 
-    /// ランダムな指し手は必ず合法手の中にある（2-2 の不変条件）。
-    @Test func randomPlayerChoosesOnlyLegalMoves() throws {
-        var generator = SplitMix64(seed: 11)
-        var game = Game.starting(from: .initial)
-        for _ in 0..<200 {
-            guard case .ongoing = game.status else {
-                break
-            }
-            let move = try #require(PlayerKind.random.choose(in: game.position, using: &generator))
-            #expect(game.position.legalMoves().contains(move))
-            game = game.playing(move)
-        }
-    }
-
     /// 終局した局は通算に 1 回だけ数え、次の 1 歩で初期局面の次の局を始める。
     @Test func finishedGameIsCountedOnceAndTheNextGameStarts() {
         var generator = SplitMix64(seed: 3)

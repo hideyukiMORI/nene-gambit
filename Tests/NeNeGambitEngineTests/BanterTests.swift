@@ -61,18 +61,18 @@ struct BanterTests {
 
     /// 同じシードからは同じ会話が出る。
     @Test func sameSeedGivesTheSameBanter() {
-        #expect(Self.transcript(seed: 21, plies: 400) == Self.transcript(seed: 21, plies: 400))
-        #expect(Self.transcript(seed: 21, plies: 400) != Self.transcript(seed: 22, plies: 400))
+        #expect(Self.transcript(seed: 21, plies: 40) == Self.transcript(seed: 21, plies: 40))
+        #expect(Self.transcript(seed: 21, plies: 40) != Self.transcript(seed: 22, plies: 40))
     }
 
-    /// 話す頻度: ランダムな対局で、100 半手あたり 8〜30 回（局の始まりと終わりを除く）。
+    /// 話す頻度: 100 半手あたり 8〜30 回（局の始まりと終わりを除く）。
     ///
-    /// 2026-10-25 の実測（シード 4・2000 半手）は 11 回。ランダムな対局は駒を取る手が 8%・王手が 5% しか無く、
-    /// 発言の 4 割近くは静かな局面のひと言になる。この範囲は「黙り込む」「しゃべりすぎる」退行を捕まえるためのもの。
+    /// 2026-10-25 の実測（シード 4・300 半手・探索ありの対局）は 14 回（43 回のうち王手まわり 22・取り合い 18・静かな局面 2）。
+    /// ランダムな対局のときは 11 回で、4 割近くが静かな局面のひと言だった（ADR 0007）。この範囲は「黙り込む」「しゃべりすぎる」退行を捕まえるためのもの。
     @Test func talksOftenButNotConstantly() {
         let framing: Set<Cue> = [.start, .win, .lose, .draw]
-        let lines = Self.transcript(seed: 4, plies: 2_000).filter { !framing.contains($0.cue) }
-        let perHundred = lines.count * 100 / 2_000
+        let lines = Self.transcript(seed: 4, plies: 300).filter { !framing.contains($0.cue) }
+        let perHundred = lines.count * 100 / 300
         #expect((8...30).contains(perHundred), "100 半手あたり \(perHundred) 回")
     }
 

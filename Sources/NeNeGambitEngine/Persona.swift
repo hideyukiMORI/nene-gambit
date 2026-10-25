@@ -1,6 +1,8 @@
+import NeNeGambitCore
+
 /// 白黒の性格（キャスト）。施主の決定（Q7・2026-10-25）: 4 名で、局ごとにランダムに組む。
 ///
-/// 性格は「指し方」と「話し方」を持つ。指し方は評価と探索が入るまで全員ランダム（Phase 3 の手順 4 で差を付ける）。
+/// 性格は「指し方」（`SearchProfile`・FR-06）と「話し方」（台本）を持つ。
 public enum Persona: Sendable, Hashable, CaseIterable {
     /// 自信過剰な攻め屋。
     case vex
@@ -25,12 +27,31 @@ public enum Persona: Sendable, Hashable, CaseIterable {
         }
     }
 
-    /// 指し方。
-    public var strategy: PlayerKind {
+    /// 指し方（ADR 0009）。VEX は攻め・MORT は守り・NULL_PTR は浅く大きくばらつく・GRANNY はいちばん深く読む。
+    var profile: SearchProfile {
         switch self {
-        case .vex, .mort, .nullPointer, .granny:
-            return .random
+        case .vex:
+            return SearchProfile(
+                depth: 3, nodeLimit: 60_000, openingPlies: 6, openingMargin: 40, tieMargin: 15,
+                weights: StyleWeights(center: 8, pawnAdvance: 4, kingShelter: 10, aggression: 6))
+        case .mort:
+            return SearchProfile(
+                depth: 3, nodeLimit: 60_000, openingPlies: 6, openingMargin: 30, tieMargin: 10,
+                weights: StyleWeights(center: 6, pawnAdvance: 6, kingShelter: 30, aggression: 1))
+        case .nullPointer:
+            return SearchProfile(
+                depth: 1, nodeLimit: 5_000, openingPlies: 10, openingMargin: 200, tieMargin: 120,
+                weights: StyleWeights(center: 2, pawnAdvance: 2, kingShelter: 0, aggression: 2))
+        case .granny:
+            return SearchProfile(
+                depth: 4, nodeLimit: 150_000, openingPlies: 4, openingMargin: 25, tieMargin: 8,
+                weights: StyleWeights(center: 8, pawnAdvance: 5, kingShelter: 20, aggression: 3))
         }
+    }
+
+    /// その局で指す手。合法手が無ければ nil。返す手は必ず合法手の中にある。
+    public func choose(in game: Game, using generator: inout some RandomNumberGenerator) -> Move? {
+        Searcher.choose(in: game, profile: profile, using: &generator)
     }
 
     /// 気分ごとの顔（ASCII 3 文字）。

@@ -37,8 +37,10 @@ struct Screensaver {
                 previous = nil
             }
             if clock.now >= deadline {
+                // 探索にかかった時間を間隔に上乗せしないよう、読み始めた時刻から次の締め切りを数える
+                let started = clock.now
                 series = series.advanced(using: &generator)
-                deadline = clock.now + pause(after: series)
+                deadline = started + pause(after: series)
             }
             draw(deadline: deadline)
         }

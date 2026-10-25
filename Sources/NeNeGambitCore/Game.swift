@@ -33,6 +33,13 @@ public struct Game: Sendable {
         )
     }
 
+    /// その合法手を指した後の局面が、この局ですでに何回現れたか（同一局面 3 回の判定と同じ数え方）。
+    /// 勝っている側が同じ局面の繰り返しを避けるために使う。
+    public func occurrences(after move: Move) -> Int {
+        let key = RepetitionKey(position.applying(move))
+        return keys.filter { $0 == key }.count
+    }
+
     /// 対局の状態。合法手が無ければメイトかステイルメイトが先に決まり、次に 50 手・3 回・駒不足の順に見る。
     public var status: GameStatus {
         switch position.status {

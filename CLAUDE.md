@@ -122,6 +122,6 @@ Waivers: none | WVR-NNNN
 
 現在のタスクは [docs/todo/current.md](docs/todo/current.md)。GitHub Issue が正で、そこは要約。
 
-- 動くもの: `make check`・`nene-gambit`（キャスト 4 名がランダムに指しながら話す対局をサイバー HUD で描き続ける）・`NeNeGambitCore`（perft は 6 局面×深さ 5 で公表値と一致）
-- 動かないもの: 評価・探索・性格ごとの指し方（手順 4）
+- 動くもの: `make check`・`nene-gambit`（キャスト 4 名が評価と探索で指しながら話す対局をサイバー HUD で描き続ける）・`NeNeGambitCore`（perft は 6 局面×深さ 5 で公表値と一致）
+- まだ無いもの: 公開（Phase 4）
 - 施主の未決（指示書の Q4〜Q10）を自分で埋めない。画面に出す前に Q4 の切り替え方・Q5・Q6・Q8 を、評価と探索の前に Q7 を聞く

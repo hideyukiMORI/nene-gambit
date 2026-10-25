@@ -26,7 +26,7 @@ public struct GameSeries: Sendable {
             return Self.newGame(number: gameNumber + 1, tally: tally, previous: banter, using: &generator)
         }
         let mover = game.position.sideToMove == .white ? players.white : players.black
-        guard let move = mover.strategy.choose(in: game.position, using: &generator) else {
+        guard let move = mover.choose(in: game, using: &generator) else {
             preconditionFailure("続いている局で合法手が無い")
         }
         let next = game.playing(move)
