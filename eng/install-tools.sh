@@ -6,7 +6,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 want="$(tr -d '[:space:]' < .swift-version)"
-have="$(swift --version 2>/dev/null | sed -n 's/^Swift version \([0-9.]*\) .*/\1/p' | head -n 1)"
+# swiftly は .swift-version の版を探し、入っていなければ swift 自体の起動を拒む。その出力も理由として出す
+if ! version_output="$(swift --version 2>&1)"; then
+    echo "tools: swift は ${want} が要るが、起動できない: $(head -n 2 <<<"$version_output" | tr '\n' ' ')" >&2
+    exit 1
+fi
+have="$(sed -n 's/^Swift version \([0-9.]*\) .*/\1/p' <<<"$version_output" | head -n 1)"
 if [ "$have" != "$want" ]; then
     echo "tools: swift は ${want} が要る（いまは ${have:-無い}）" >&2
     exit 1

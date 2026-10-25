@@ -75,7 +75,7 @@ NeNe Gambit での具体: 合法手の生成・指し手の適用・終局の判
 SwiftPM は宣言していない target の import を `no such module` で、宣言の循環を `cyclic dependency declaration found` で拒む
 （実測 M6-a〜M6-d）。その宣言そのものを、正本 `docs/architecture/module-graph.txt` と規約検査（CNF-010）が突き合わせる。
 
-- 機械強制: **planned** → SwiftPM の target グラフ＋CNF-010
+- 機械強制: **active** → SwiftPM の target グラフ＋CNF-010
 
 ### ARC-003 — 中核はプラットフォームから独立している
 
@@ -85,7 +85,7 @@ Core・Engine・Render は、端末・ファイル・ネットワーク・現在
 🔑 Swift の標準モジュール（Foundation・Glibc・Dispatch）は、依存を宣言しなくても import できてしまう（実測 M5-a・M5-b・M5-g）。
 ビルドグラフでは塞げないので、target ごとの import 許可リスト（CNF-011）が塞ぐ。Core・Engine・Render の許可リストは空である。
 
-- 機械強制: **planned** → CNF-011（import 許可リスト）＋CNF-012（標準ライブラリだけで読める時計・乱数・プロセス状態）
+- 機械強制: **active** → CNF-011（import 許可リスト）＋CNF-012（標準ライブラリだけで読める時計・乱数・プロセス状態）
 
 ### ARC-004 — 状態には唯一の所有者がいる
 
@@ -136,7 +136,7 @@ Core・Engine・Render・Terminal は、現在時刻・乱数・既定ロケー�
 
 探索は時間ではなく深さ（またはノード数）で打ち切る。乱数はシード付きの自前 PRNG で、**同じシード＝同じ対局の列**。
 
-- 機械強制: **planned** → CNF-012（合成ルート以外で `SystemRandomNumberGenerator`・`ContinuousClock`・`CommandLine`・`getenv`・`using:` の無い `random(...)` 等を拒否）＋CNF-011
+- 機械強制: **active** → CNF-012（合成ルート以外で `SystemRandomNumberGenerator`・`ContinuousClock`・`CommandLine`・`getenv`・`using:` の無い `random(...)` 等を拒否）＋CNF-011
 - 補足: テストソースにも同じ禁止を適用する。**テストが実時刻を読むことも決定性の破壊である。**
 
 ### ARC-008 — 境界は一度だけ検証する

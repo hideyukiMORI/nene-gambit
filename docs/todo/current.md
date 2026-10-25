@@ -8,8 +8,8 @@
 | 段階 | 状態 |
 | --- | --- |
 | Phase 0 言語の実測 | ✅ 2026-10-25（56 ケース・ADR 0001） |
-| Phase 1 文書とゲートの足場 | 🔧 Issue #1 |
-| Phase 2 negative proof | 🔲 Issue #1 |
+| Phase 1 文書とゲートの足場 | ✅ 2026-10-25（Issue #1・PR #2） |
+| Phase 2 negative proof | ✅ 2026-10-25（45 件・active 45 行・docs/quality/gate-proofs.md） |
 | Phase 3 縦切り（指し手生成と perft から） | 🔲 別 Issue |
 | Phase 4 公開 | 🔲 別 Issue |
 

@@ -16,7 +16,6 @@ only_rules:
   - force_try # SWF-005
   - large_tuple # SWF-006
   - fallthrough # SWF-002
-  - private_over_fileprivate # SWF-008
   - superfluous_disable_command # SWF-015
   - blanket_disable_command # SWF-015
 

@@ -18,7 +18,7 @@
 第 2 の完了定義を文書化しない。Swift の版は `.swift-version`、SwiftLint の版は `eng/swiftlint.lock` にだけ書き、
 `make check` の最初の段（`eng/install-tools.sh`）が実際の版と突き合わせる。
 
-- 機械強制: **planned** → CNF-018（CI の `run` はツールチェーンの導入と `make check` の 1 行だけ）＋`eng/install-tools.sh`（版の不一致で失敗）
+- 機械強制: **active** → CNF-018（CI の `run` はツールチェーンの導入と `make check` の 1 行だけ）＋`eng/install-tools.sh`（版の不一致で失敗）
 
 ### QLT-002 — 警告は失敗する
 
@@ -28,33 +28,33 @@
 コマンド行の `-Xswiftc -warnings-as-errors` は manifest の `treatAllWarnings(as: .warning)` / `treatWarning` に負ける（実測 M8-h・M8-i）。
 🔴 既知ケースを漏らす `@unknown default` の診断は、警告エラー下でも warning のまま exit 0 になる（M1-e・M1-h）。これは CNF-013 が字句で拒否する。
 
-- 機械強制: **planned** → CNF-009（manifest）＋`swift-format lint --strict`＋SwiftLint `strict: true`
+- 機械強制: **active** → CNF-009（manifest）＋`swift-format lint --strict`＋SwiftLint `strict: true`
 
 ### QLT-003 — baseline を作らない
 
 lint・静的解析・アーキテクチャ・依存・テストのいずれについても baseline を持たない。既存の違反を「無かったこと」にする経路を作らない。
 **唯一の例外機構は期限付きの狭い waiver である。**
 
-- 機械強制: **planned** → CNF-005
+- 機械強制: **active** → CNF-005
 
 ### QLT-004 — 整形は検査であって修復ではない
 
 整形は `swift-format lint --strict --configuration .swift-format` で検査する。ゲートがソースを書き換えて成功させることはしない。
 整形の設定は `.swift-format` 1 つだけ（入れ子の設定ファイルは CNF-007 が拒否する）。
 
-- 機械強制: **planned** → `make format`＋CNF-007
+- 機械強制: **active** → `make format`＋CNF-007
 
 ### QLT-005 — ローカルと CI は同一
 
 CI で必要なゲートは、すべてローカルで実行できる。検査を足したくなったら、まずローカルのゲートに足す。
 
-- 機械強制: **planned** → CNF-018
+- 機械強制: **active** → CNF-018
 
 ### QLT-006 — アーキテクチャは実行可能
 
 モジュール境界・import 規律・状態の経路は機械が検査する。散文だけのアーキテクチャ規則は、**「不能」と明記されない限り未完成**として扱う。
 
-- 機械強制: **planned** → SwiftPM の target グラフ＋CNF-010 / CNF-011
+- 機械強制: **active** → SwiftPM の target グラフ＋CNF-010 / CNF-011
 
 ### QLT-007 — カスタムゲートには negative proof が要る
 
@@ -65,7 +65,7 @@ CI で必要なゲートは、すべてローカルで実行できる。検査�
 🔴 **設定が在ることは、検査が効いていることの証明ではない。** SwiftLint の静的バイナリは SourceKit が要る規則を黙って飛ばす。
 `eng/lint.sh` は `Skipping enabled rule` が出たら失敗にする。
 
-- 機械強制: **planned** → `make conformance-test`＋CNF-006（active の行に証明行があること）＋CNF-007
+- 機械強制: **active** → `make conformance-test`＋CNF-006（active の行に証明行があること）＋CNF-007
 
 ### QLT-008 — 振る舞いの変更はテストを伴う
 
@@ -92,7 +92,7 @@ CI で必要なゲートは、すべてローカルで実行できる。検査�
 製品の外部依存は 0。道具は版と SHA-256 で固定する（SwiftLint: `eng/swiftlint.lock`・CI の Swift: `eng/swift.lock`）。
 許可リストに無い外部パッケージを manifest に書けない。
 
-- 機械強制: **planned** → CNF-009＋`eng/install-tools.sh` / `eng/install-swift.sh` の `sha256sum --check`
+- 機械強制: **active** → CNF-009＋`eng/install-tools.sh` / `eng/install-swift.sh` の `sha256sum --check`
 
 ### QLT-012 — 検証の頻度は変更に従う
 
@@ -119,26 +119,26 @@ head が動いたら Draft に戻して再度 Ready にする。古い成功 SHA
 
 | ID | 内容 | 規則 | 状態 |
 | --- | --- | --- | --- |
-| `CNF-001` | 禁止された総称名（型名の語尾・ディレクトリ名・target 名） | SWF-010 | planned |
-| `CNF-002` | 最上位の型は 1 ファイル 1 つ・ファイル名＝型名 | SWF-011 | planned |
-| `CNF-003` | 抑制は行単位の `swiftlint:disable:next` / `:this` に waiver を添えたものだけ。`@diagnose`・`swift-format-ignore`・`@available(..., deprecated)` を拒否 | SWF-015 | planned |
-| `CNF-004` | waiver 台帳の整合（命名・必須項目・索引・**期限切れで落とす**） | SWF-015 | planned |
-| `CNF-005` | baseline とゲート無力化の禁止（名前に baseline を含むファイル・ゲートの経路の弱める指定・SwiftLint の除外系の設定・生成物の置き場以外を無視する `.gitignore`） | QLT-003 | planned |
-| `CNF-006` | 文書整合（規則 ID の重複定義・未定義参照・マトリクスの行・本文とマトリクスの状態の一致・active の証明行） | ADR 0001 | planned |
-| `CNF-007` | 検査設定が実際にゲートから読み込まれていること（設定は所定の 2 つだけ・Makefile が明示的に渡す・有効にした lint 規則に規則 ID） | QLT-007 | planned |
-| `CNF-008` | `TODO` / `FIXME` には `(#Issue番号)` | QLT-008 | planned |
-| `CNF-009` | manifest の設定（全 target に `treatAllWarnings(as: .error)` と `ExistentialAny`・`unsafeFlags` / `treatWarning` / `plugins:` 等の禁止・依存は許可リストだけ） | QLT-002 | planned |
-| `CNF-010` | SwiftPM の target と依存が正本 `docs/architecture/module-graph.txt` と一致・正本に循環が無い・合成ルートは 1 つ | ARC-002 | planned |
-| `CNF-011` | target ごとの import 許可リスト（Core・Engine・Render は標準モジュール無し・Foundation はどこにも無い・テストは `Testing` だけ） | ARC-003 | planned |
-| `CNF-012` | 合成ルート以外で時刻・乱数・環境・プロセス状態を読まない（`using:` の無い `random(...)` 等） | ARC-007 | planned |
-| `CNF-013` | 網羅性を殺す全捕捉の禁止（`default:` / `@unknown default` / `case _:` / `case let x:`） | SWF-002 | planned |
-| `CNF-014` | `unsafe` 系 API は `unsafe=allowed` の target だけ。リフレクション・下線付き属性・マクロ・動的呼び出しはどこでも禁止 | SWF-009 | planned |
-| `CNF-015` | `Codable` / `Decodable` / `Encodable` の禁止 | SWF-007 | planned |
-| `CNF-016` | 公開の格納 `var` と `open` の禁止 | SWF-003 | planned |
-| `CNF-017` | 合成ルート以外で `print` / `readLine` / `exit` / `FileHandle` 等を使わない | ARC-006 | planned |
-| `CNF-018` | CI はツールチェーンの導入と `make check` の 1 行だけを呼ぶ・アクションは commit SHA で固定・token は `contents: read` | QLT-001 | planned |
-| `CNF-019` | 製品コード（`Sources/`）で `throws` / `throw` / `try` / `catch` を使わない | SWF-005 | planned |
-| `CNF-020` | `Any` / `AnyObject` / `AnyHashable` / `AnyClass` の禁止 | SWF-006 | planned |
+| `CNF-001` | 禁止された総称名（型名の語尾・ディレクトリ名・target 名） | SWF-010 | active |
+| `CNF-002` | 最上位の型は 1 ファイル 1 つ・ファイル名＝型名 | SWF-011 | active |
+| `CNF-003` | 抑制は行単位の `swiftlint:disable:next` / `:this` に waiver を添えたものだけ。`@diagnose`・`swift-format-ignore`・`@available(..., deprecated)` を拒否 | SWF-015 | active |
+| `CNF-004` | waiver 台帳の整合（命名・必須項目・索引・**期限切れで落とす**） | SWF-015 | active |
+| `CNF-005` | baseline とゲート無力化の禁止（名前に baseline を含むファイル・ゲートの経路の弱める指定・SwiftLint の除外系の設定・生成物の置き場以外を無視する `.gitignore`） | QLT-003 | active |
+| `CNF-006` | 文書整合（規則 ID の重複定義・未定義参照・マトリクスの行・本文とマトリクスの状態の一致・active の証明行） | ADR 0001 | active |
+| `CNF-007` | 検査設定が実際にゲートから読み込まれていること（設定は所定の 2 つだけ・Makefile が明示的に渡す・有効にした lint 規則に規則 ID） | QLT-007 | active |
+| `CNF-008` | `TODO` / `FIXME` には `(#Issue番号)` | QLT-008 | active |
+| `CNF-009` | manifest の設定（全 target に `treatAllWarnings(as: .error)` と `ExistentialAny`・`unsafeFlags` / `treatWarning` / `plugins:` 等の禁止・依存は許可リストだけ） | QLT-002 | active |
+| `CNF-010` | SwiftPM の target と依存が正本 `docs/architecture/module-graph.txt` と一致・正本に循環が無い・合成ルートは 1 つ | ARC-002 | active |
+| `CNF-011` | target ごとの import 許可リスト（Core・Engine・Render は標準モジュール無し・Foundation はどこにも無い・テストは `Testing` だけ） | ARC-003 | active |
+| `CNF-012` | 合成ルート以外で時刻・乱数・環境・プロセス状態を読まない（`using:` の無い `random(...)` 等） | ARC-007 | active |
+| `CNF-013` | 網羅性を殺す全捕捉の禁止（`default:` / `@unknown default` / `case _:` / `case let x:`） | SWF-002 | active |
+| `CNF-014` | `unsafe` 系 API は `unsafe=allowed` の target だけ。リフレクション・下線付き属性・マクロ・動的呼び出しはどこでも禁止 | SWF-009 | active |
+| `CNF-015` | `Codable` / `Decodable` / `Encodable` の禁止 | SWF-007 | active |
+| `CNF-016` | 公開の格納 `var` と `open` の禁止 | SWF-003 | active |
+| `CNF-017` | 合成ルート以外で `print` / `readLine` / `exit` / `FileHandle` 等を使わない | ARC-006 | active |
+| `CNF-018` | CI はツールチェーンの導入と `make check` の 1 行だけを呼ぶ・アクションは commit SHA で固定・token は `contents: read` | QLT-001 | active |
+| `CNF-019` | 製品コード（`Sources/`）で `throws` / `throw` / `try` / `catch` を使わない | SWF-005 | active |
+| `CNF-020` | `Any` / `AnyObject` / `AnyHashable` / `AnyClass` の禁止 | SWF-006 | active |
 
 🔴 **検出語の一部は検査器のソースで文字列を分割して組み立てる**（検査器が自分自身を違反として報告する。前例: xi-tools 初版で 7 件の自己検出）。
 🔴 **検査器の単体テスト（`eng/tests/`）は規約検査の参照検査の対象外**（テストは意図的な違反と架空の規則 ID を書く場所）。
@@ -154,71 +154,73 @@ CNF-006 が「本文に定義があるのにここに行が無い」「本文と
 | 規則 | 状態 | 機械強制の実体 |
 | --- | --- | --- |
 | ARC-001 | planned | レビュー事項（CNF-001 が温床を減らす） |
-| ARC-002 | planned | SwiftPM の target グラフ＋CNF-010 |
-| ARC-003 | planned | CNF-011＋CNF-012 |
+| ARC-002 | active | SwiftPM の target グラフ＋CNF-010 |
+| ARC-003 | active | CNF-011＋CNF-012 |
 | ARC-004 | planned | レビュー事項 |
 | ARC-005 | planned | レビュー事項（CNF-016 が補助） |
 | ARC-006 | planned | レビュー事項（CNF-017・CNF-014 が補助） |
-| ARC-007 | planned | CNF-012＋CNF-011 |
+| ARC-007 | active | CNF-012＋CNF-011 |
 | ARC-008 | planned | レビュー事項 |
 | ARC-009 | planned | 永続化を持たない（CNF-015 が補助） |
 | ARC-010 | planned | レビュー事項（CNF-019 が補助） |
 | ARC-011 | planned | レビュー事項（CNF-011 が補助） |
 | ARC-012 | 不能 | QLT-010 の手続き |
 | SWF-001 | planned | レビュー事項 |
-| SWF-002 | planned | コンパイラ（M1-a）＋CNF-013＋SwiftLint `fallthrough` |
-| SWF-003 | planned | コンパイラ（M2-a・M2-b）＋CNF-016 |
-| SWF-004 | planned | SwiftLint（`force_unwrapping` ほか 5 規則） |
-| SWF-005 | planned | CNF-019＋SwiftLint `force_try` |
-| SWF-006 | planned | CNF-020＋SwiftLint `large_tuple` |
+| SWF-002 | active | コンパイラ（M1-a）＋CNF-013＋SwiftLint `fallthrough` |
+| SWF-003 | active | コンパイラ（M2-a・M2-b）＋CNF-016 |
+| SWF-004 | active | SwiftLint（`force_unwrapping` ほか 5 規則） |
+| SWF-005 | active | CNF-019＋SwiftLint `force_try` |
+| SWF-006 | active | CNF-020＋SwiftLint `large_tuple` |
 | SWF-007 | planned | レビュー事項（CNF-015・CNF-014 が補助） |
-| SWF-008 | planned | レビュー事項（SwiftLint `private_over_fileprivate` が補助） |
-| SWF-009 | planned | CNF-014＋CNF-009 |
-| SWF-010 | planned | CNF-001 |
-| SWF-011 | planned | CNF-002 |
-| SWF-012 | planned | SwiftLint（複雑度・長さ・引数・入れ子の 6 規則）。制御構造のネストと bool 引数は道具が無い |
+| SWF-008 | planned | レビュー事項（swift-format `FileScopedDeclarationPrivacy` が補助） |
+| SWF-009 | active | CNF-014＋CNF-009 |
+| SWF-010 | active | CNF-001 |
+| SWF-011 | active | CNF-002 |
+| SWF-012 | active | SwiftLint（複雑度・長さ・引数・入れ子の 6 規則） |
 | SWF-013 | planned | Phase 3 で並行の形を決める |
-| SWF-014 | planned | CNF-011＋CNF-012 |
-| SWF-015 | planned | CNF-003＋CNF-004＋SwiftLint `superfluous_disable_command` / `blanket_disable_command` |
-| SWF-016 | planned | CNF-011 |
+| SWF-014 | active | CNF-011＋CNF-012 |
+| SWF-015 | active | CNF-003＋CNF-004＋SwiftLint `superfluous_disable_command` / `blanket_disable_command` |
+| SWF-016 | active | CNF-011 |
+| SWF-017 | 不能 | 測る道具が無い（レビュー事項） |
+| SWF-018 | planned | レビュー事項（CNF-016 が補助） |
 | GIT-001 | planned | PR テンプレートの `Closes #N`（検査は無い） |
 | GIT-002 | planned | ruleset で `main` を保護（ブランチ名の形の検査は無い） |
-| GIT-003 | planned | `.githooks/commit-msg`＋`make commits`（PR の全コミット） |
-| GIT-004 | planned | ruleset（PR 必須・squash のみ・必須 check） |
+| GIT-003 | active | `.githooks/commit-msg`＋`make commits`（PR の全コミット） |
+| GIT-004 | active | ruleset（PR 必須・squash のみ・必須 check） |
 | GIT-005 | planned | PR タイトルの検査は無い |
-| QLT-001 | planned | CNF-018＋`eng/install-tools.sh` |
-| QLT-002 | planned | CNF-009＋`swift-format --strict`＋SwiftLint `strict` |
-| QLT-003 | planned | CNF-005 |
-| QLT-004 | planned | `make format`＋CNF-007 |
-| QLT-005 | planned | CNF-018 |
-| QLT-006 | planned | SwiftPM＋CNF-010＋CNF-011 |
-| QLT-007 | planned | `make conformance-test`＋CNF-006＋CNF-007 |
+| QLT-001 | active | CNF-018＋`eng/install-tools.sh` |
+| QLT-002 | active | CNF-009＋`swift-format --strict`＋SwiftLint `strict` |
+| QLT-003 | active | CNF-005 |
+| QLT-004 | active | `make format`＋CNF-007 |
+| QLT-005 | active | CNF-018 |
+| QLT-006 | active | SwiftPM＋CNF-010＋CNF-011 |
+| QLT-007 | active | `make conformance-test`＋CNF-006＋CNF-007 |
 | QLT-008 | planned | レビュー事項 |
 | QLT-009 | planned | カバレッジの層を置いていない |
 | QLT-010 | 不能 | PR の手続き |
-| QLT-011 | planned | CNF-009＋lock の SHA-256 照合 |
+| QLT-011 | active | CNF-009＋lock の SHA-256 照合 |
 | QLT-012 | planned | CI の起動条件＋ruleset の strict |
 | QLT-013 | planned | レビュー事項 |
-| CNF-001 | planned | `eng/conformance.py` |
-| CNF-002 | planned | `eng/conformance.py` |
-| CNF-003 | planned | `eng/conformance.py` |
-| CNF-004 | planned | `eng/conformance.py` |
-| CNF-005 | planned | `eng/conformance.py` |
-| CNF-006 | planned | `eng/conformance.py` |
-| CNF-007 | planned | `eng/conformance.py`＋`eng/lint.sh` |
-| CNF-008 | planned | `eng/conformance.py` |
-| CNF-009 | planned | `eng/conformance.py` |
-| CNF-010 | planned | `eng/conformance.py` |
-| CNF-011 | planned | `eng/conformance.py` |
-| CNF-012 | planned | `eng/conformance.py` |
-| CNF-013 | planned | `eng/conformance.py` |
-| CNF-014 | planned | `eng/conformance.py` |
-| CNF-015 | planned | `eng/conformance.py` |
-| CNF-016 | planned | `eng/conformance.py` |
-| CNF-017 | planned | `eng/conformance.py` |
-| CNF-018 | planned | `eng/conformance.py` |
-| CNF-019 | planned | `eng/conformance.py` |
-| CNF-020 | planned | `eng/conformance.py` |
+| CNF-001 | active | `eng/conformance.py` |
+| CNF-002 | active | `eng/conformance.py` |
+| CNF-003 | active | `eng/conformance.py` |
+| CNF-004 | active | `eng/conformance.py` |
+| CNF-005 | active | `eng/conformance.py` |
+| CNF-006 | active | `eng/conformance.py` |
+| CNF-007 | active | `eng/conformance.py`＋`eng/lint.sh` |
+| CNF-008 | active | `eng/conformance.py` |
+| CNF-009 | active | `eng/conformance.py` |
+| CNF-010 | active | `eng/conformance.py` |
+| CNF-011 | active | `eng/conformance.py` |
+| CNF-012 | active | `eng/conformance.py` |
+| CNF-013 | active | `eng/conformance.py` |
+| CNF-014 | active | `eng/conformance.py` |
+| CNF-015 | active | `eng/conformance.py` |
+| CNF-016 | active | `eng/conformance.py` |
+| CNF-017 | active | `eng/conformance.py` |
+| CNF-018 | active | `eng/conformance.py` |
+| CNF-019 | active | `eng/conformance.py` |
+| CNF-020 | active | `eng/conformance.py` |
 
 ---
 

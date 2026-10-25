@@ -40,7 +40,7 @@ Conventional Commits を、この正確な形で書く。
 - 互換性を壊す公開契約の変更は `:` の前に `!` を付け、フッタに `BREAKING CHANGE:` を書く
 - 件名には「何を」ではなく**判断**を置く（例: `警告のエラー化は manifest に置き、コマンド行には書かない`）
 
-- 機械強制: **planned** → `.githooks/commit-msg` と `make commits`（`$(BASE)..HEAD` の全コミット）が同じ `eng/validate-commit-message.py` を呼ぶ
+- 機械強制: **active** → `.githooks/commit-msg` と `make commits`（`$(BASE)..HEAD` の全コミット）が同じ `eng/validate-commit-message.py` を呼ぶ
 
 ### GIT-004 — `main` への変更は PR の squash merge だけ
 
@@ -48,7 +48,7 @@ Conventional Commits を、この正確な形で書く。
 PR には目的・変更の要約・使った正典経路・規則 ID・検証結果・waiver・残るリスク・`Closes #N` を書く（DEVELOPMENT_WORKFLOW 第 7 節）。
 実装中とレビュー中は draft。Draft → Ready がフルゲートの要求である。
 
-- 機械強制: **planned** → ruleset（PR 必須・squash のみ・必須 check・force push と削除の禁止）。PR 本文の中身はレビュー事項
+- 機械強制: **active** → ruleset（PR 必須・squash のみ・必須 check・force push と削除の禁止）。PR 本文の中身はレビュー事項
 
 ### GIT-005 — PR のタイトルは GIT-003 の件名と同じ形
 

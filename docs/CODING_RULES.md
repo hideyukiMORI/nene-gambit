@@ -16,7 +16,7 @@
 ### SWF-001 — 境界でのプリミティブ執着を禁じる
 
 升・駒・指し手・探索の深さ・シードのように**単位や不変条件を持つ値**は専用の型にする。生の `Int` や `String` を深いところまで運ばない。
-検証は生成時に行う。
+検証は生成時に行う。文字列キーの辞書で型を代用しない。
 
 - 機械強制: **planned**（「専用型にすべき値かどうか」はレビュー事項）
 - 補助: SWF-007（唯一のファクトリ）により、型を作れば必ず検証される
@@ -29,23 +29,21 @@
 
 タプルの位置の `_`（`case (.white, _):`）は「その位置を見ない」という意味で、全捕捉ではないので許す。
 
-- 機械強制: **planned** → コンパイラ（ケース漏れは error・M1-a）＋CNF-013（全捕捉を字句で拒否）＋SwiftLint `fallthrough`
+- 機械強制: **active** → コンパイラ（ケース漏れは error・M1-a）＋CNF-013（全捕捉を字句で拒否）＋SwiftLint `fallthrough`
 
 ### SWF-003 — 公開状態は不変
 
 `public var` の格納プロパティを持たない（他モジュールから代入できる・M2-c）。公開する格納プロパティは `let` か `private(set) var`。
-`open` を使わない。公開型は値の意味を持つ `struct` / `enum` に寄せる（配列は値の意味で複製される・M2-d）。
-クラス参照の中身は `let` でも変更できる（M2-e）ので、公開 API でクラスを返さない。
+`open` を使わない。公開型は値の意味を持つ `struct` / `enum` に寄せる（配列は値の意味で複製される・M2-d）。クラスについては SWF-018。
 
-- 機械強制: **planned** → コンパイラ（`let` / `private(set)` への代入は error・M2-a / M2-b）＋CNF-016（公開の格納 `var` と `open` を拒否）
-- 残る穴: 公開 API がクラスを返さないことはレビュー事項
+- 機械強制: **active** → コンパイラ（`let` / `private(set)` への代入は error・M2-a / M2-b）＋CNF-016（公開の格納 `var` と `open` を拒否）
 
 ### SWF-004 — `nil` の意味は一つ
 
 `nil` が意味してよいのは「省略可能な値が無い」だけ。無効・未読込・失敗・未知を表さない。
 強制アンラップ `!`・暗黙アンラップ Optional（`T!`）・`as!`・Optional の Bool とコレクションを書かない（M3-c・M3-d）。
 
-- 機械強制: **planned** → SwiftLint `force_unwrapping` / `implicitly_unwrapped_optional` / `force_cast` / `discouraged_optional_boolean` / `discouraged_optional_collection`
+- 機械強制: **active** → SwiftLint `force_unwrapping` / `implicitly_unwrapped_optional` / `force_cast` / `discouraged_optional_boolean` / `discouraged_optional_collection`
 - 補足: 暗黙のゼロ値は無い（M3-f）。未初期化の `let` は本コンパイルでだけ error になる（M3-a / M3-b）ので、ゲートは `-typecheck` を使わない
 
 ### SWF-005 — 期待される失敗は例外で表さない
@@ -53,15 +51,14 @@
 検証エラー・合法でない指し手・読めない FEN は閉じた結果型（`enum`）で返す。製品コードに `throws` / `throw` / `try` / `catch` を書かない。
 `try!` も書かない。プログラム上の欠陥は `precondition` / `fatalError` で止める。
 
-- 機械強制: **planned** → CNF-019（製品コードの例外を拒否）＋SwiftLint `force_try`
+- 機械強制: **active** → CNF-019（製品コードの例外を拒否）＋SwiftLint `force_try`
 - 補足: テストは Swift Testing の `#require` が `throws` を要るので CNF-019 の対象外
 
 ### SWF-006 — 汎用データバッグを禁じる
 
-`Any` / `AnyObject` / `AnyHashable` / `AnyClass`・意味を持つ 3 つ以上の要素のタプル・文字列キーの辞書で型を代用しない。名前付きの型を作る。
+`Any` / `AnyObject` / `AnyHashable` / `AnyClass` と、3 つ以上の要素のタプルで型を代用しない。名前付きの型を作る。
 
-- 機械強制: **planned** → CNF-020（`Any` 系を拒否）＋SwiftLint `large_tuple`（要素 3 以上を拒否）
-- 残る穴: 文字列キーの辞書を型の代わりに使うことはレビュー事項
+- 機械強制: **active** → CNF-020（`Any` 系を拒否）＋SwiftLint `large_tuple`（要素 3 以上を拒否）
 
 ### SWF-007 — 構築が不変条件を守る
 
@@ -80,7 +77,7 @@
 既定は `internal` 以下。他の target から実際に使うものだけ `public`。テストのためだけに `public` にしない（`@testable import` を使う）。
 `fileprivate` より `private` を使う。
 
-- 機械強制: **planned**（「実際に使うか」はレビュー事項。補助: SwiftLint `private_over_fileprivate`）
+- 機械強制: **planned**（「実際に使うか」はレビュー事項。補助: swift-format の `FileScopedDeclarationPrivacy` がファイル直下の `fileprivate` を拒否する）
 
 ### SWF-009 — 言語マジックを制限する
 
@@ -89,7 +86,7 @@ termios / ioctl のために依存グラフの正本で `unsafe=allowed` を宣�
 リフレクション（`Mirror`）・下線付き属性（`@_…`）・動的呼び出し（`@dynamicMemberLookup` / `@dynamicCallable`）・マクロ・
 `dlopen`・`@objc`・SwiftPM のビルドプラグインは、どこでも使わない（使うなら ADR）。
 
-- 機械強制: **planned** → CNF-014＋CNF-009（manifest の `plugins:`）
+- 機械強制: **active** → CNF-014＋CNF-009（manifest の `plugins:`）
 
 ### SWF-010 — 名前が役割を語る
 
@@ -99,32 +96,36 @@ termios / ioctl のために依存グラフの正本で `unsafe=allowed` を宣�
 承認された役割の語尾は `Port` / `Adapter` / `Query` / `Command` / `Handler` / `Policy` / `Factory` / `Codec` / `Mapper` / `Renderer` / `Reducer` / `Outcome` / `Rejection`。
 **その型がその役割そのものであるときだけ**使う。`Processor` や `Data` のように文脈次第で妥当な語は機械では拒否しない。
 
-- 機械強制: **planned** → CNF-001
+- 機械強制: **active** → CNF-001
 
 ### SWF-011 — 1 ファイル 1 主要宣言
 
 ファイルの最上位に置く型（`class` / `struct` / `enum` / `protocol` / `actor`）は 1 つまでとし、ファイル名は型名と一致させる。
 拡張だけのファイルは `型名+役割.swift` とする。寄せ集めのファイルを作らない。
 
-- 機械強制: **planned** → CNF-002
+- 機械強制: **active** → CNF-002
 
 ### SWF-012 — 複雑度に上限を置く
 
 | 指標 | 上限 | 道具 |
 | --- | --- | --- |
-| 循環的複雑度（関数・`case` も数える） | 10 | SwiftLint `cyclomatic_complexity` |
+| 循環的複雑度（関数・`case` も数える。SwiftLint は分岐 11 個を 11 と数える） | 10 | SwiftLint `cyclomatic_complexity` |
 | 関数の長さ | 60 行 | SwiftLint `function_body_length` |
 | 型の入れ子・関数の入れ子 | 型 1 段・関数 2 段 | SwiftLint `nesting` |
-| 制御構造のネストの深さ | 4 | **測る道具が無い**（SwiftLint の `nesting` は型と関数の入れ子だけを数える） |
 | 引数の数（既定値つきも数える） | 4 | SwiftLint `function_parameter_count` |
 | ファイルの長さ | 400 行（コメントだけの行を除く） | SwiftLint `file_length` |
 | 型の長さ | 300 行 | SwiftLint `type_body_length` |
-| bool の制御引数（公開 API） | 禁止 | **測る道具が無い** |
 
 閾値を満たすためだけに意味のある処理を割るのは目的に反する。超える必要があるときは**測定可能な理由**を添えて ADR にする。
 （盤面の指し手生成は駒の種類ごとに関数を分けるので 60 行に収まる見込みだが、収まらなければ ADR で判断する。）
 
-- 機械強制: **planned** → SwiftLint の 6 規則（制御構造のネストと bool 引数は道具が無いのでレビュー事項）
+- 機械強制: **active** → SwiftLint の 6 規則
+
+### SWF-017 — 制御構造のネストは 4 段まで・公開 API に bool の制御引数を置かない
+
+`if` / `for` / `while` / `switch` / `guard` のネストは 4 段まで。公開 API の関数に、振る舞いを切り替えるための `Bool` 引数を置かない（閉じた enum にする）。
+
+- 機械強制: **不能**（SwiftLint の `nesting` は型と関数の入れ子だけを数え、制御構造のネストと bool の制御引数を測る規則は無い。字句検査で波括弧を数える案は、クロージャと区別できないので採らない。レビュー事項）
 
 ---
 
@@ -143,7 +144,7 @@ Foundation をどの target からも import しない（許可リストに無�
 ロケール依存の整形をしない。文字は Swift の `String` / `Character` で扱い、端末へ出すときに UTF-8 にするのは Terminal だけ。
 駒記号を出すときの 1 升の桁数は Render の 1 か所で決め、その前提を ADR に書く（East Asian Ambiguous 幅の問題）。
 
-- 機械強制: **planned** → CNF-011（Foundation を許可リストに入れない）＋CNF-012（`Locale` / `TimeZone` / `Date` の名前を拒否）
+- 機械強制: **active** → CNF-011（Foundation を許可リストに入れない）＋CNF-012（`Locale` / `TimeZone` / `Date` の名前を拒否）
 
 ### SWF-015 — 抑制は例外であって道具ではない
 
@@ -157,13 +158,19 @@ Swift は抑制を言語で封じられない（`@diagnose(..., as: ignored)`・
 - 腐った抑制（もう違反が無いのに残っている）は SwiftLint `superfluous_disable_command` が落とす
 - 期限切れの waiver は CNF-004 がゲートを落とす
 
-- 機械強制: **planned** → CNF-003 / CNF-004＋SwiftLint `superfluous_disable_command` / `blanket_disable_command`
+- 機械強制: **active** → CNF-003 / CNF-004＋SwiftLint `superfluous_disable_command` / `blanket_disable_command`
+
+### SWF-018 — 公開 API でクラスを返さない
+
+クラス参照の中身は `let` で持っても変更できる（M2-e）。公開 API が返す・受け取る型は値の意味を持つ `struct` / `enum` にし、クラスを返さない。
+
+- 機械強制: **planned**（レビュー事項。公開の格納 `var` と `open` は CNF-016 が拒否する）
 
 ### SWF-016 — テスト枠組みは Swift Testing だけ
 
 テストは Swift Testing（`import Testing`）で書く。XCTest を import しない（[ADR 0002](adr/0002-swift-testing-only.md)）。
 
-- 機械強制: **planned** → CNF-011（テスト target の許可リストは `Testing` だけ）
+- 機械強制: **active** → CNF-011（テスト target の許可リストは `Testing` だけ）
 
 ---
 
@@ -202,6 +209,7 @@ Phase 3 の手順 2 で規則にする。いま決まっているのは憲章の
 | 検査 | 不採用の理由 |
 | --- | --- |
 | SwiftLint の既定規則の一括有効化・`opt_in_rules` の一括 | 相互に矛盾する規則が同時に入り、規則ではなく道具の機嫌に従うことになる。`only_rules` で 1 つずつ名指しする |
+| SwiftLint の `private_over_fileprivate` | swift-format の `FileScopedDeclarationPrivacy` が同じことを見る（P-04: 同じ規則を 2 か所に置かない。実測: 証明 P44 で swift-format が先に落とした） |
 | SwiftLint の `identifier_name` / `type_name` | 盤面の座標（`rank` / `file` の 1 文字の添字）など、短い名前が意味を持つ領域で誤検出が多い。総称名の禁止は CNF-001 が見る |
 | SwiftLint の `explicit_acl` | `internal` の既定を毎回書かせるだけで、可視性を小さくする方向には働かない（SWF-008 はレビュー事項） |
 | SwiftLint の `unused_import` / `unused_declaration` | `analyze` サブコマンドとコンパイラのログが要り、静的バイナリの単独実行では回らない。未使用のローカル変数はコンパイラの警告（エラー化済み）が拾うが、未使用の `private` 宣言はどの道具も拾わない（不能として残す） |
