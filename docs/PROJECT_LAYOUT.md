@@ -10,8 +10,7 @@
 
 ## 1. 承認されたモジュール
 
-空の「将来用 target」を作らない。下の一覧は「承認された形」で、`Package.swift` にあるのは **`NeNeGambitCore` と `NeNeGambitCoreTests` だけ**（Issue #3）。
-残りの target は最初の具体的な責務が生じた PR で足す。
+空の「将来用 target」を作らない。下の一覧の target は Issue #3（Core）と Issue #5（残り）ですべて `Package.swift` に入った。
 
 ```text
 nene-gambit (executable)
@@ -33,6 +32,7 @@ NeNeGambitCore
 ```
 
 テスト target は `<target>Tests`（`NeNeGambitCoreTests` 等）で、Swift Testing だけを import できる（SWF-016）。
+`NeNeGambitTerminalTests` だけは、差分のテストに要る格子を作るために Engine にも依存する（ADR 0006）。
 
 ---
 
@@ -42,7 +42,7 @@ NeNeGambitCore
 NeNeGambitCore      -> （無し）
 NeNeGambitEngine    -> NeNeGambitCore
 NeNeGambitRender    -> NeNeGambitCore, NeNeGambitEngine
-NeNeGambitTerminal  -> NeNeGambitRender                         ＋ 標準モジュール Glibc
+NeNeGambitTerminal  -> NeNeGambitRender                         ＋ 標準モジュール Glibc, Synchronization（ADR 0006）
 nene-gambit         -> 上の 4 つすべて（明示的な合成のためだけに） ＋ 標準モジュール Glibc
 ```
 

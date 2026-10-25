@@ -7,10 +7,10 @@
 NeNeGambitCore          kind=library     deps=
 NeNeGambitEngine        kind=library     deps=NeNeGambitCore
 NeNeGambitRender        kind=library     deps=NeNeGambitCore,NeNeGambitEngine
-NeNeGambitTerminal      kind=library     deps=NeNeGambitRender                                                     std=Glibc unsafe=allowed
+NeNeGambitTerminal      kind=library     deps=NeNeGambitRender                                                     std=Glibc,Synchronization unsafe=allowed
 nene-gambit             kind=executable  deps=NeNeGambitCore,NeNeGambitEngine,NeNeGambitRender,NeNeGambitTerminal std=Glibc role=composition-root
 
 NeNeGambitCoreTests     kind=test        deps=NeNeGambitCore                                                       std=Testing
 NeNeGambitEngineTests   kind=test        deps=NeNeGambitCore,NeNeGambitEngine                                      std=Testing
 NeNeGambitRenderTests   kind=test        deps=NeNeGambitCore,NeNeGambitEngine,NeNeGambitRender                     std=Testing
-NeNeGambitTerminalTests kind=test        deps=NeNeGambitRender,NeNeGambitTerminal                                  std=Testing
+NeNeGambitTerminalTests kind=test        deps=NeNeGambitEngine,NeNeGambitRender,NeNeGambitTerminal                 std=Testing

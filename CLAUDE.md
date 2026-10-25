@@ -61,6 +61,16 @@ FEN が読めない・合法でない指し手などは閉じた enum の結果�
 
 `eng/swift-strict.sh` が `swift build` / `swift test` の出力の `warning:` を見て落とす。テスト target を足したらソースも同じ PR で足す（空のテスト target は警告になる）。
 
+### 文字列で分岐するなら `if`
+
+`switch` を `String` や `Int` に使うと全捕捉が要るが、`default:` / `case _:` / `case let x:` は CNF-013 が落とす。
+`case _ where true:` は全捕捉にならず、コンパイラが `switch must be exhaustive` で拒む（証明 P50。Issue #5 で書きかけて確かめた）。
+文字列での分岐は `if` で書く（`LaunchOptions.setting` の形）。
+
+### 状態はループの値の中に置く
+
+Swift 6 ではトップレベルの可変な変数は main actor に隔離され、トップレベルの関数から触れない。ループの状態は `Screensaver` の 1 つの値にまとめる（ADR 0006）。
+
 ### SwiftLint は静的バイナリ
 
 動的バイナリは glibc 2.35 では起動しない。`make bootstrap`（または `make check` の `tools` 段）が `.tools/swiftlint` に静的バイナリを入れる。
@@ -112,6 +122,6 @@ Waivers: none | WVR-NNNN
 
 現在のタスクは [docs/todo/current.md](docs/todo/current.md)。GitHub Issue が正で、そこは要約。
 
-- 動くもの: `make check`・`NeNeGambitCore`（合法手生成・適用・FEN・メイトとステイルメイト。perft は 6 局面×深さ 5 で公表値と一致）
-- 動かないもの: 画面・端末・評価・探索
+- 動くもの: `make check`・`nene-gambit`（ランダムに指す 2 者の対局を端末に描き続ける）・`NeNeGambitCore`（perft は 6 局面×深さ 5 で公表値と一致）
+- 動かないもの: 評価・探索・性格（Q7 待ち）
 - 施主の未決（指示書の Q4〜Q10）を自分で埋めない。画面に出す前に Q4 の切り替え方・Q5・Q6・Q8 を、評価と探索の前に Q7 を聞く
