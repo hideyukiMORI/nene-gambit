@@ -5,7 +5,8 @@
 
 見ること:
 - alternate screen に入り、24 ビットの色で盤と HUD（`Game 1`）を描く
-- `g` で駒記号に替わる
+- `g` で駒記号に替わり、`t` で次のテーマに替わる
+- 罫線の幅の問い合わせに答えない端末（この疑似端末）では ASCII の枠に落ちる
 - `q`・Ctrl+C・SIGTERM のどれで終わっても exit 0 で、出力の最後が端末を戻す列で、termios の lflag が起動前と同じ
 - SIGSEGV（異常終了）でも端末を戻してから、そのシグナルで死ぬ
 - 端末を小さくすると落ちずに 1 行の文言を出し、戻すと盤を描き直す
@@ -19,6 +20,7 @@ from __future__ import annotations
 import fcntl
 import os
 import pty
+import re
 import select
 import signal
 import struct
@@ -84,7 +86,7 @@ def main() -> int:
     binary = sys.argv[1]
     failures: list[str] = []
     for label, keys, send, expect in (
-        ("q", [b"g", b"q"], None, ("exit", 0)),
+        ("q", [b"g", b"t", b"q"], None, ("exit", 0)),
         ("Ctrl+C", [b"\x03"], None, ("exit", 0)),
         ("SIGTERM", [], signal.SIGTERM, ("exit", 0)),
         ("SIGSEGV", [], signal.SIGSEGV, ("signal", signal.SIGSEGV)),
@@ -94,15 +96,18 @@ def main() -> int:
         actual = ("exit", os.WEXITSTATUS(status)) if os.WIFEXITED(status) else ("signal", os.WTERMSIG(status))
         check(f"{label}: 終わり方 {actual}", actual == expect, failures)
         check(f"{label}: alternate screen に入って盤と HUD を 24 ビットの色で描く",
-              ENTER in text and "Game 1" in text and "38;2;" in text, failures)
+              ENTER in text and "GAME 001" in text and "38;2;" in text, failures)
         check(f"{label}: 最後に端末を戻す（カーソルを出し alternate screen を抜ける）",
               SHOW in text and text.rstrip().endswith(LEAVE), failures)
         check(f"{label}: termios の lflag が起動前と同じ", restored, failures)
+        plain = re.sub(r"\x1b\[[0-9;?]*[A-Za-z]", "", text)  # 色とカーソルの CSI 列を除いた、書いた文字だけ
         if label == "q":
             check("g: 駒記号に替わる", KING in text, failures)
+            check("t: 次のテーマ（PHOSPHOR）に替わる", "PHOSPHOR" in plain, failures)
+            check("幅の問い合わせに答えない端末では ASCII の枠に落ちる", "+-[ MATCH ]" in plain and "┌" not in plain, failures)
         if label == "resize":
             check("resize: 小さくすると 1 行の文言を出し、戻すと盤を描き直す",
-                  "Terminal too small" in text and text.rfind("Game 1") > text.find("Terminal too small"), failures)
+                  "TERMINAL TOO SMALL" in text and text.rfind("GAME 001") > text.find("TERMINAL TOO SMALL"), failures)
     bad = subprocess.run([binary, "--speed", "3"], capture_output=True, text=True, stdin=subprocess.DEVNULL)
     check("間違った起動オプションは exit 2 で理由を 1 行", bad.returncode == 2 and bad.stderr.count("\n") == 1, failures)
     off = subprocess.run([binary], capture_output=True, text=True, stdin=subprocess.DEVNULL)

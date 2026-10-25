@@ -40,7 +40,7 @@ struct GameSeriesTests {
     /// 終局した局は通算に 1 回だけ数え、次の 1 歩で初期局面の次の局を始める。
     @Test func finishedGameIsCountedOnceAndTheNextGameStarts() {
         var generator = SplitMix64(seed: 3)
-        var series = GameSeries.starting(Players(white: .random, black: .random))
+        var series = GameSeries.starting(using: &generator)
         while case .ongoing = series.game.status {
             series = series.advanced(using: &generator)
         }
@@ -55,7 +55,7 @@ struct GameSeriesTests {
     /// シードから `count` 局を最後まで指し、各局の手の列を返す。
     static func games(seed: UInt64, count: Int) -> [[Move]] {
         var generator = SplitMix64(seed: seed)
-        var series = GameSeries.starting(Players(white: .random, black: .random))
+        var series = GameSeries.starting(using: &generator)
         var finished: [[Move]] = []
         while finished.count < count {
             series = series.advanced(using: &generator)

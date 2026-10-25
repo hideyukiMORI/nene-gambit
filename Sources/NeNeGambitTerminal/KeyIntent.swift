@@ -4,6 +4,8 @@ public enum KeyIntent: Sendable, Hashable {
     case quit
     /// `g`: 駒の字形を英字と駒記号で切り替える（FR-07）。
     case toggleGlyphs
+    /// `t`: カラーテーマを次へ（FR-13）。
+    case cycleTheme
 
     /// 読み取ったバイト列の中の意図（順番どおり）。知らないキーとエスケープ列は捨てる。
     public static func decode(_ bytes: [UInt8]) -> [KeyIntent] {
@@ -19,6 +21,8 @@ public enum KeyIntent: Sendable, Hashable {
                 intents.append(.quit)
             } else if byte == UInt8(ascii: "g") || byte == UInt8(ascii: "G") {
                 intents.append(.toggleGlyphs)
+            } else if byte == UInt8(ascii: "t") || byte == UInt8(ascii: "T") {
+                intents.append(.cycleTheme)
             }
             index += 1
         }
